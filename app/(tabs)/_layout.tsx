@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, History, User, Brain } from 'lucide-react-native';
+import { Chrome as Home, History, User, Brain, MessageSquare } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -51,6 +51,14 @@ export default function TabLayout() {
           title: 'Practice',
           headerTitle: 'Interview Practice',
           tabBarIcon: ({ color, size }) => <Brain size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="copilot"
+        options={{
+          title: 'Co-pilot',
+          headerTitle: 'Interview Co-pilot',
+          tabBarIcon: ({ color, size }) => <MessageSquare size={size} color={color} />,
         }}
       />
       <Tabs.Screen
