@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, History, User, Brain, MessageSquare } from 'lucide-react-native';
+import { Home, History, User, Brain, Bot } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -12,9 +12,10 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,
+        tabBarShowLabel: false,
         tabBarStyle: {
-          height: 60 + insets.bottom,
-          paddingBottom: insets.bottom,
+          height: 45 + insets.bottom,
+          paddingBottom: insets.bottom / 3,
           backgroundColor: colors.card,
           borderTopWidth: 0,
           elevation: 0,
@@ -42,15 +43,15 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           headerShown: false,
-          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => <Home size={28} color={color} />,
         }}
       />
       <Tabs.Screen
         name="interviews"
         options={{
-          title: 'Practice',
-          headerTitle: 'Interview Practice',
-          tabBarIcon: ({ color, size }) => <Brain size={size} color={color} />,
+          title: 'AI-Mock Interview',
+          headerTitle: 'AI-Mock Interview',
+          tabBarIcon: ({ color, size }) => <Brain size={28} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -58,7 +59,7 @@ export default function TabLayout() {
         options={{
           title: 'Co-pilot',
           headerTitle: 'Interview Co-pilot',
-          tabBarIcon: ({ color, size }) => <MessageSquare size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => <Bot size={28} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -66,7 +67,7 @@ export default function TabLayout() {
         options={{
           title: 'History',
           headerTitle: 'Interview History',
-          tabBarIcon: ({ color, size }) => <History size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => <History size={28} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -74,7 +75,7 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           headerTitle: 'Your Profile',
-          tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => <User size={28} color={color} />,
         }}
       />
     </Tabs>
