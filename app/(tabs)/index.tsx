@@ -27,7 +27,13 @@ export default function HomeScreen() {
           entering={FadeInDown.delay(100).duration(500)}
           style={styles.header}
         >
-          <View>
+          <TouchableOpacity style={styles.profileButton}>
+            <Image 
+              source={{ uri: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg' }} 
+              style={styles.profileImage} 
+            />
+          </TouchableOpacity>
+          <View style={styles.headerTextContainer}>
             <Text style={[styles.greeting, { color: colors.textSecondary }]}>
               Hello, {user?.name || 'Guest'}
             </Text>
@@ -35,12 +41,6 @@ export default function HomeScreen() {
               Ready to ace your interview?
             </Text>
           </View>
-          <TouchableOpacity style={styles.profileButton}>
-            <Image 
-              source={{ uri: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg' }} 
-              style={styles.profileImage} 
-            />
-          </TouchableOpacity>
         </Animated.View>
 
         <Animated.View 
@@ -214,10 +214,13 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 24,
-    marginBottom: 24,
+    paddingHorizontal: 16,
+    marginBottom: 20,
+  },
+  headerTextContainer: {
+    flex: 1,
+    marginLeft: 12,
   },
   greeting: {
     fontFamily: 'Inter-Regular',
@@ -229,9 +232,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   profileButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     overflow: 'hidden',
   },
   profileImage: {
