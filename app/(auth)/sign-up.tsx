@@ -477,12 +477,21 @@ export default function SignUp() {
                   <ChevronLeft size={24} color="#3D5AF1" />
                 </TouchableOpacity>
               )}
-              <TouchableOpacity 
-                style={[styles.navButton, styles.nextButton]}
-                onPress={handleNext}
-              >
-                <ChevronRight size={24} color="#FFFFFF" />
-              </TouchableOpacity>
+              {currentStep === 3 ? (
+                <TouchableOpacity 
+                  style={[styles.navButton, styles.nextButton, styles.createAccountButton]}
+                  onPress={handleNext}
+                >
+                  <Text style={styles.createAccountButtonText}>Create Account</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity 
+                  style={[styles.navButton, styles.nextButton]}
+                  onPress={handleNext}
+                >
+                  <ChevronRight size={24} color="#FFFFFF" />
+                </TouchableOpacity>
+              )}
             </View>
           </Animated.View>
         </ScrollView>
@@ -722,5 +731,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 4,
     fontFamily: 'Inter-Medium',
+  },
+  createAccountButton: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  createAccountButtonText: {
+    color: '#FFFFFF',
+    fontFamily: 'Inter-Bold',
+    fontSize: 16,
   },
 });
