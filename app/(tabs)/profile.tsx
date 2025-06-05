@@ -1,14 +1,52 @@
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Switch } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Switch, Modal } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Settings, Moon, CircleHelp as HelpCircle, LogOut, ChevronRight, Bell, Shield, CreditCard as Edit } from 'lucide-react-native';
+import { Settings, Moon, CircleHelp as HelpCircle, LogOut, ChevronRight, Bell, Shield, CreditCard as Edit, Info } from 'lucide-react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/hooks/useAuth';
+import { useState } from 'react';
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { colors, isDark, toggleTheme } = useTheme();
   const { user, signOut } = useAuth();
+  const [privacyModalVisible, setPrivacyModalVisible] = useState(false);
+
+  const PrivacyPolicyModal = () => (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={privacyModalVisible}
+      onRequestClose={() => setPrivacyModalVisible(false)}
+    >
+      <View style={[styles.modalContainer, { backgroundColor: 'rgba(0,0,0,0.5)' }]}>
+        <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+          <View style={styles.modalHeader}>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>Privacy Policy</Text>
+            <TouchableOpacity onPress={() => setPrivacyModalVisible(false)}>
+              <Text style={[styles.closeButton, { color: colors.primary }]}>Close</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.modalBody}>
+            <Text style={[styles.privacyText, { color: colors.text }]}>
+              1. Information Collection{'\n\n'}
+              We collect information that you provide directly to us, including your name, email address, and any other information you choose to provide.{'\n\n'}
+              2. Information Usage{'\n\n'}
+              We use the information we collect to provide, maintain, and improve our services, to develop new ones, and to protect our company and users.{'\n\n'}
+              3. Information Sharing{'\n\n'}
+              We do not share your personal information with companies, organizations, or individuals outside of our company except in the following cases:{'\n\n'}
+              • With your consent{'\n'}
+              • For legal reasons{'\n\n'}
+              4. Data Security{'\n\n'}
+              We work hard to protect our users from unauthorized access to or unauthorized alteration, disclosure, or destruction of information we hold.{'\n\n'}
+              5. Your Rights{'\n\n'}
+              You have the right to access, correct, or delete your personal information. You can also object to our processing of your personal information.
+            </Text>
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
+  );
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -20,51 +58,47 @@ export default function ProfileScreen() {
           entering={FadeInDown.delay(100).duration(500)}
           style={styles.header}
         >
-          <Text style={[styles.title, { color: colors.text }]}>Profile</Text>
-          <TouchableOpacity style={[styles.iconButton, { backgroundColor: colors.card }]}>
-            <Settings size={20} color={colors.primary} />
-          </TouchableOpacity>
+          <View style={[styles.profileCard, { backgroundColor: colors.card }]}>
+            <View style={styles.profileContent}>
+              <Image 
+                source={{ uri: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg' }} 
+                style={styles.profileImage} 
+              />
+              <View style={styles.profileInfo}>
+                <View style={styles.nameRow}>
+                  <Text style={[styles.profileName, { color: colors.text }]}>
+                    {user?.name || 'Jane Doe'}
+                  </Text>
+                  <TouchableOpacity style={[styles.iconButton, { backgroundColor: colors.border }]}>
+                    <Settings size={20} color={colors.primary} />
+                  </TouchableOpacity>
+                </View>
+                <Text style={[styles.profileEmail, { color: colors.textSecondary }]}>
+                  {user?.email || 'jane@example.com'}
+                </Text>
+              </View>
+            </View>
+            
+            <View style={[styles.statsContainer, { borderTopColor: colors.border }]}>
+              <View style={styles.statItem}>
+                <Text style={[styles.statValue, { color: colors.text }]}>26</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Interviews</Text>
+              </View>
+              <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+              <View style={styles.statItem}>
+                <Text style={[styles.statValue, { color: colors.text }]}>76%</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Avg. Score</Text>
+              </View>
+              <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+              <View style={styles.statItem}>
+                <Text style={[styles.statValue, { color: colors.text }]}>12</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Hours</Text>
+              </View>
+            </View>
+          </View>
         </Animated.View>
         
-        <Animated.View 
-          entering={FadeInDown.delay(200).duration(500)}
-          style={[styles.profileCard, { backgroundColor: colors.card }]}
-        >
-          <View style={styles.profileContent}>
-            <Image 
-              source={{ uri: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg' }} 
-              style={styles.profileImage} 
-            />
-            <View style={styles.profileInfo}>
-              <Text style={[styles.profileName, { color: colors.text }]}>
-                {user?.name || 'Jane Doe'}
-              </Text>
-              <Text style={[styles.profileEmail, { color: colors.textSecondary }]}>
-                {user?.email || 'jane@example.com'}
-              </Text>
-            </View>
-            <TouchableOpacity style={[styles.editButton, { backgroundColor: colors.border }]}>
-              <Edit size={16} color={colors.text} />
-            </TouchableOpacity>
-          </View>
-          
-          <View style={[styles.statsRow, { borderTopColor: colors.border }]}>
-            <View style={styles.statItem}>
-              <Text style={[styles.statValue, { color: colors.text }]}>26</Text>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Interviews</Text>
-            </View>
-            <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-            <View style={styles.statItem}>
-              <Text style={[styles.statValue, { color: colors.text }]}>76%</Text>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Avg. Score</Text>
-            </View>
-            <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-            <View style={styles.statItem}>
-              <Text style={[styles.statValue, { color: colors.text }]}>12</Text>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Hours</Text>
-            </View>
-          </View>
-        </Animated.View>
+
         
         <Animated.View 
           entering={FadeInDown.delay(300).duration(500)}
@@ -73,6 +107,18 @@ export default function ProfileScreen() {
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Preferences</Text>
           
           <View style={styles.settingsList}>
+            <View style={[styles.settingsItem, { backgroundColor: colors.card }]}>
+              <View style={styles.settingsItemLeft}>
+                <View style={[styles.settingsIconContainer, { backgroundColor: '#D1E9FF' }]}>
+                  <Info size={20} color="#3D5AF1" />
+                </View>
+                <Text style={[styles.settingsLabel, { color: colors.text }]}>Additional Information</Text>
+              </View>
+              <TouchableOpacity>
+                <ChevronRight size={20} color={colors.textSecondary} />
+              </TouchableOpacity>
+            </View>
+
             <View style={[styles.settingsItem, { backgroundColor: colors.card }]}>
               <View style={styles.settingsItemLeft}>
                 <View style={[styles.settingsIconContainer, { backgroundColor: '#E0DBFF' }]}>
@@ -93,7 +139,9 @@ export default function ProfileScreen() {
                 <View style={[styles.settingsIconContainer, { backgroundColor: '#FFE4D9' }]}>
                   <Bell size={20} color="#FE7A36" />
                 </View>
-                <Text style={[styles.settingsLabel, { color: colors.text }]}>Notifications</Text>
+                <TouchableOpacity style={styles.buttonContainer}>
+                  <Text style={[styles.settingsLabel, { color: colors.text }]}>Notifications</Text>
+                </TouchableOpacity>
               </View>
               <TouchableOpacity>
                 <ChevronRight size={20} color={colors.textSecondary} />
@@ -105,9 +153,14 @@ export default function ProfileScreen() {
                 <View style={[styles.settingsIconContainer, { backgroundColor: '#DCFCE7' }]}>
                   <Shield size={20} color="#22C55E" />
                 </View>
-                <Text style={[styles.settingsLabel, { color: colors.text }]}>Privacy</Text>
+                <TouchableOpacity 
+                  style={styles.buttonContainer}
+                  onPress={() => setPrivacyModalVisible(true)}
+                >
+                  <Text style={[styles.settingsLabel, { color: colors.text }]}>Privacy</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => setPrivacyModalVisible(true)}>
                 <ChevronRight size={20} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
@@ -148,6 +201,7 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </Animated.View>
       </ScrollView>
+      <PrivacyPolicyModal />
     </View>
   );
 }
@@ -160,34 +214,27 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
     marginTop: 16,
     marginBottom: 24,
   },
-  title: {
-    fontFamily: 'Inter-Bold',
-    fontSize: 24,
-  },
-  iconButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   profileCard: {
-    marginHorizontal: 24,
+    marginHorizontal: 12,
     borderRadius: 16,
-    marginBottom: 32,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
   },
   profileContent: {
-    padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
+    padding: 20,
   },
   profileImage: {
     width: 60,
@@ -198,6 +245,11 @@ const styles = StyleSheet.create({
   profileInfo: {
     flex: 1,
   },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   profileName: {
     fontFamily: 'Inter-Bold',
     fontSize: 18,
@@ -207,17 +259,17 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: 14,
   },
-  editButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+  iconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  statsRow: {
+  statsContainer: {
     flexDirection: 'row',
     borderTopWidth: 1,
-    padding: 16,
+    padding: 20,
   },
   statItem: {
     flex: 1,
@@ -284,5 +336,46 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     fontSize: 16,
     marginLeft: 8,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    width: '90%',
+    maxHeight: '80%',
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  modalTitle: {
+    fontFamily: 'Inter-Bold',
+    fontSize: 18,
+  },
+  closeButton: {
+    fontFamily: 'Inter-Medium',
+    fontSize: 16,
+  },
+  modalBody: {
+    padding: 16,
+  },
+  privacyText: {
+    fontFamily: 'Inter-Regular',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  buttonContainer: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 8,
   },
 });

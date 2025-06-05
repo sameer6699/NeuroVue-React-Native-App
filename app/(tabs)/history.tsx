@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Calendar, Filter, BookOpen, Mic, Video, Star, ChartBar as BarChart4 } from 'lucide-react-native';
+import { Calendar, Filter, BookOpen, Mic, Video, Star, ChartBar as BarChart4, ChevronRight, Clock, Calendar as CalendarIcon } from 'lucide-react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTheme } from '@/hooks/useTheme';
 import { PerformanceChart } from '@/components/history/PerformanceChart';
@@ -57,7 +57,7 @@ export default function HistoryScreen() {
           style={styles.section}
         >
           <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]} numberOfLines={1}>
               Performance Trend
             </Text>
             <TouchableOpacity style={[styles.periodButton, { backgroundColor: colors.card }]}>
@@ -66,20 +66,52 @@ export default function HistoryScreen() {
           </View>
           
           <View style={[styles.chartCard, { backgroundColor: colors.card }]}>
-            <PerformanceChart />
-            <View style={styles.legendContainer}>
-              <View style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: '#915EFF' }]} />
-                <Text style={[styles.legendText, { color: colors.textSecondary }]}>Technical</Text>
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.contributionGridContainer}
+            >
+              <View style={styles.contributionGrid}>
+                {Array.from({ length: 30 }).map((_, index) => (
+                  <View key={index} style={styles.contributionRow}>
+                    {Array.from({ length: 7 }).map((_, dayIndex) => {
+                      const intensity = Math.floor(Math.random() * 4);
+                      return (
+                        <View
+                          key={dayIndex}
+                          style={[
+                            styles.contributionCell,
+                            {
+                              backgroundColor: intensity === 0 ? colors.border :
+                                intensity === 1 ? '#9BE9A8' :
+                                intensity === 2 ? '#40C463' :
+                                '#30A14E'
+                            }
+                          ]}
+                        />
+                      );
+                    })}
+                  </View>
+                ))}
               </View>
-              <View style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: '#FE7A36' }]} />
-                <Text style={[styles.legendText, { color: colors.textSecondary }]}>Behavioral</Text>
-              </View>
-              <View style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: '#22C55E' }]} />
-                <Text style={[styles.legendText, { color: colors.textSecondary }]}>System Design</Text>
-              </View>
+            </ScrollView>
+            <View style={styles.contributionLegend}>
+              <Text style={[styles.legendText, { color: colors.textSecondary }]}>Less</Text>
+              {[0, 1, 2, 3].map((intensity) => (
+                <View
+                  key={intensity}
+                  style={[
+                    styles.legendCell,
+                    {
+                      backgroundColor: intensity === 0 ? colors.border :
+                        intensity === 1 ? '#9BE9A8' :
+                        intensity === 2 ? '#40C463' :
+                        '#30A14E'
+                    }
+                  ]}
+                />
+              ))}
+              <Text style={[styles.legendText, { color: colors.textSecondary }]}>More</Text>
             </View>
           </View>
         </Animated.View>
@@ -88,7 +120,11 @@ export default function HistoryScreen() {
           entering={FadeInDown.delay(400).duration(500)}
           style={styles.section}
         >
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Interview History</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]} numberOfLines={1}>
+              Interview History
+            </Text>
+          </View>
           
           <View style={styles.historyList}>
             <TouchableOpacity style={[styles.historyItem, { backgroundColor: colors.card }]}>
@@ -97,16 +133,23 @@ export default function HistoryScreen() {
               </View>
               <View style={styles.historyContent}>
                 <View style={styles.historyHeader}>
-                  <Text style={[styles.historyTitle, { color: colors.text }]}>
+                  <Text style={[styles.historyTitle, { color: colors.text }]} numberOfLines={1}>
                     React Developer Interview
                   </Text>
                   <View style={[styles.scoreChip, { backgroundColor: '#DCFCE7' }]}>
                     <Text style={[styles.scoreText, { color: '#22C55E' }]}>85%</Text>
                   </View>
                 </View>
-                <Text style={[styles.historySubtitle, { color: colors.textSecondary }]}>
-                  Technical • 28 min • June 15, 2025
-                </Text>
+                <View style={styles.historyDetails}>
+                  <View style={styles.historyDetailItem}>
+                    <Clock size={14} color={colors.textSecondary} />
+                    <Text style={[styles.historySubtitle, { color: colors.textSecondary }]}>28 min</Text>
+                  </View>
+                  <View style={styles.historyDetailItem}>
+                    <CalendarIcon size={14} color={colors.textSecondary} />
+                    <Text style={[styles.historySubtitle, { color: colors.textSecondary }]}>June 15, 2025</Text>
+                  </View>
+                </View>
                 <View style={styles.tagsContainer}>
                   <View style={[styles.tagChip, { backgroundColor: '#E0DBFF' }]}>
                     <Text style={[styles.tagText, { color: '#915EFF' }]}>React</Text>
@@ -115,25 +158,36 @@ export default function HistoryScreen() {
                     <Text style={[styles.tagText, { color: '#915EFF' }]}>JavaScript</Text>
                   </View>
                 </View>
+                <View style={styles.historyFooter}>
+                  <Text style={[styles.historyType, { color: colors.textSecondary }]}>Technical</Text>
+                  <ChevronRight size={16} color={colors.textSecondary} />
+                </View>
               </View>
             </TouchableOpacity>
-            
+
             <TouchableOpacity style={[styles.historyItem, { backgroundColor: colors.card }]}>
               <View style={[styles.historyIconContainer, { backgroundColor: '#FFE4D9' }]}>
                 <Mic size={20} color="#FE7A36" />
               </View>
               <View style={styles.historyContent}>
                 <View style={styles.historyHeader}>
-                  <Text style={[styles.historyTitle, { color: colors.text }]}>
+                  <Text style={[styles.historyTitle, { color: colors.text }]} numberOfLines={1}>
                     Leadership Experience
                   </Text>
                   <View style={[styles.scoreChip, { backgroundColor: '#FFF4CC' }]}>
                     <Text style={[styles.scoreText, { color: '#EAB308' }]}>72%</Text>
                   </View>
                 </View>
-                <Text style={[styles.historySubtitle, { color: colors.textSecondary }]}>
-                  Behavioral • 22 min • June 12, 2025
-                </Text>
+                <View style={styles.historyDetails}>
+                  <View style={styles.historyDetailItem}>
+                    <Clock size={14} color={colors.textSecondary} />
+                    <Text style={[styles.historySubtitle, { color: colors.textSecondary }]}>22 min</Text>
+                  </View>
+                  <View style={styles.historyDetailItem}>
+                    <CalendarIcon size={14} color={colors.textSecondary} />
+                    <Text style={[styles.historySubtitle, { color: colors.textSecondary }]}>June 12, 2025</Text>
+                  </View>
+                </View>
                 <View style={styles.tagsContainer}>
                   <View style={[styles.tagChip, { backgroundColor: '#FFE4D9' }]}>
                     <Text style={[styles.tagText, { color: '#FE7A36' }]}>Leadership</Text>
@@ -142,25 +196,36 @@ export default function HistoryScreen() {
                     <Text style={[styles.tagText, { color: '#FE7A36' }]}>Teamwork</Text>
                   </View>
                 </View>
+                <View style={styles.historyFooter}>
+                  <Text style={[styles.historyType, { color: colors.textSecondary }]}>Behavioral</Text>
+                  <ChevronRight size={16} color={colors.textSecondary} />
+                </View>
               </View>
             </TouchableOpacity>
-            
+
             <TouchableOpacity style={[styles.historyItem, { backgroundColor: colors.card }]}>
               <View style={[styles.historyIconContainer, { backgroundColor: '#D1E9FF' }]}>
                 <Video size={20} color="#3D5AF1" />
               </View>
               <View style={styles.historyContent}>
                 <View style={styles.historyHeader}>
-                  <Text style={[styles.historyTitle, { color: colors.text }]}>
+                  <Text style={[styles.historyTitle, { color: colors.text }]} numberOfLines={1}>
                     Full Mock Interview
                   </Text>
                   <View style={[styles.scoreChip, { backgroundColor: '#FEE2E2' }]}>
                     <Text style={[styles.scoreText, { color: '#EF4444' }]}>68%</Text>
                   </View>
                 </View>
-                <Text style={[styles.historySubtitle, { color: colors.textSecondary }]}>
-                  Mock • 45 min • June 8, 2025
-                </Text>
+                <View style={styles.historyDetails}>
+                  <View style={styles.historyDetailItem}>
+                    <Clock size={14} color={colors.textSecondary} />
+                    <Text style={[styles.historySubtitle, { color: colors.textSecondary }]}>45 min</Text>
+                  </View>
+                  <View style={styles.historyDetailItem}>
+                    <CalendarIcon size={14} color={colors.textSecondary} />
+                    <Text style={[styles.historySubtitle, { color: colors.textSecondary }]}>June 8, 2025</Text>
+                  </View>
+                </View>
                 <View style={styles.tagsContainer}>
                   <View style={[styles.tagChip, { backgroundColor: '#D1E9FF' }]}>
                     <Text style={[styles.tagText, { color: '#3D5AF1' }]}>Mixed</Text>
@@ -168,6 +233,10 @@ export default function HistoryScreen() {
                   <View style={[styles.tagChip, { backgroundColor: '#D1E9FF' }]}>
                     <Text style={[styles.tagText, { color: '#3D5AF1' }]}>Full Interview</Text>
                   </View>
+                </View>
+                <View style={styles.historyFooter}>
+                  <Text style={[styles.historyType, { color: colors.textSecondary }]}>Mock</Text>
+                  <ChevronRight size={16} color={colors.textSecondary} />
                 </View>
               </View>
             </TouchableOpacity>
@@ -178,7 +247,11 @@ export default function HistoryScreen() {
           entering={FadeInDown.delay(500).duration(500)}
           style={styles.section}
         >
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Key Skills</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]} numberOfLines={1}>
+              Key Skills
+            </Text>
+          </View>
           
           <ScrollView 
             horizontal
@@ -335,6 +408,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontFamily: 'Inter-Bold',
     fontSize: 18,
+    flex: 1,
   },
   periodButton: {
     paddingHorizontal: 12,
@@ -350,21 +424,37 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
   },
-  legendContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 16,
+  contributionGridContainer: {
+    paddingVertical: 8,
   },
-  legendItem: {
+  contributionGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 8,
+  },
+  contributionRow: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    marginHorizontal: 2,
+  },
+  contributionCell: {
+    width: 10,
+    height: 10,
+    borderRadius: 2,
+    margin: 1,
+  },
+  contributionLegend: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 8,
+    justifyContent: 'center',
+    marginTop: 16,
+    paddingHorizontal: 16,
   },
-  legendDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 4,
+  legendCell: {
+    width: 10,
+    height: 10,
+    borderRadius: 2,
+    marginHorizontal: 2,
   },
   legendText: {
     fontFamily: 'Inter-Regular',
@@ -376,25 +466,32 @@ const styles = StyleSheet.create({
   historyItem: {
     borderRadius: 16,
     padding: 16,
-    marginBottom: 12,
+    marginBottom: 16,
     flexDirection: 'row',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   historyIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 8,
+    width: 48,
+    height: 48,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: 16,
+    flexShrink: 0,
   },
   historyContent: {
     flex: 1,
+    minWidth: 0,
   },
   historyHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: 8,
   },
   historyTitle: {
     fontFamily: 'Inter-Bold',
@@ -402,33 +499,58 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 8,
   },
-  scoreChip: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 16,
+  historyDetails: {
+    flexDirection: 'row',
+    marginBottom: 12,
+    flexWrap: 'wrap',
   },
-  scoreText: {
-    fontFamily: 'Inter-Bold',
-    fontSize: 12,
+  historyDetailItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 16,
+    marginBottom: 4,
   },
   historySubtitle: {
     fontFamily: 'Inter-Regular',
     fontSize: 12,
-    marginBottom: 8,
+    marginLeft: 4,
   },
   tagsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    marginTop: 8,
   },
   tagChip: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 8,
+    borderRadius: 12,
     marginRight: 8,
     marginBottom: 4,
   },
   tagText: {
     fontFamily: 'Inter-Medium',
+    fontSize: 12,
+  },
+  historyFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
+  },
+  historyType: {
+    fontFamily: 'Inter-Medium',
+    fontSize: 12,
+  },
+  scoreChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
+  },
+  scoreText: {
+    fontFamily: 'Inter-Bold',
     fontSize: 12,
   },
   skillsContainer: {

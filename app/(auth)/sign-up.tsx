@@ -231,6 +231,14 @@ export default function SignUp() {
       case 1:
         return (
           <Animated.View entering={FadeInDown.duration(500)}>
+            <TouchableOpacity 
+              style={styles.backButton} 
+              onPress={() => router.replace('/')}
+            >
+              <ChevronLeft size={24} color={colors.text} />
+              <Text style={[styles.backButtonText, { color: colors.text }]}>Back</Text>
+            </TouchableOpacity>
+            
             <View style={styles.inputContainer}>
               <View style={styles.iconContainer}>
                 <User size={20} color="#3D5AF1" />
@@ -702,5 +710,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#EF4444',
     marginLeft: 4,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+  },
+  backButtonText: {
+    fontSize: 16,
+    marginLeft: 4,
+    fontFamily: 'Inter-Medium',
   },
 });
