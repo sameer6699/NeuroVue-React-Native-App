@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, TextInput, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInDown, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { useTheme } from '@/hooks/useTheme';
@@ -182,7 +182,7 @@ export default function SignUp() {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const validationErrors = validateForm(formData, currentStep);
     setErrors(validationErrors);
 
@@ -190,7 +190,72 @@ export default function SignUp() {
       if (currentStep < totalSteps) {
         setCurrentStep(currentStep + 1);
       } else {
-        router.replace('/(tabs)');
+        try {
+          // Split full name into first and last name
+          const [firstName, ...lastNameParts] = formData.fullName.trim().split(' ');
+          const lastName = lastNameParts.join(' ');
+
+          // Format mobile number (remove any non-digit characters)
+          const formattedMobile = formData.mobile.replace(/\D/g, '');
+
+          // Prepare the user data
+          const userData = {
+            firstName: firstName.trim(),
+            lastName: lastName.trim(),
+            email: formData.email.trim().toLowerCase(),
+            password: formData.password,
+            mobile: formattedMobile,
+            jobRole: formData.jobRole || 'Not Specified',
+            experienceLevel: formData.experienceLevel || 'Fresher',
+            interviewFocus: formData.interviewFocus || ['General']
+          };
+
+          // Log the data being sent
+          console.log('Sending user data:', {
+            ...userData,
+            password: '[REDACTED]'
+          });
+
+          const API_URL = 'http://192.168.78.249:5000/api/auth/signup';
+          console.log('Attempting to connect to:', API_URL);
+
+          const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: JSON.stringify(userData),
+          });
+
+          console.log('Response status:', response.status);
+          const data = await response.json();
+          console.log('Response data:', data);
+
+          if (response.ok) {
+            // Show success message
+            Alert.alert(
+              'Success',
+              data.message,
+              [
+                {
+                  text: 'OK',
+                  onPress: () => router.replace('/(tabs)')
+                }
+              ]
+            );
+          } else {
+            // Show error message
+            Alert.alert('Error', data.message || 'Failed to create account');
+          }
+        } catch (error) {
+          console.error('Signup error:', error);
+          Alert.alert(
+            'Connection Error',
+            'Unable to connect to the server. Please check your internet connection and try again.',
+            [{ text: 'OK' }]
+          );
+        }
       }
     }
   };
