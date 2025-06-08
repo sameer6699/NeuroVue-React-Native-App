@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { Eye, EyeOff, Mail, Lock, User, AlertCircle } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
 
 type AuthFormProps = {
   type: 'signin' | 'signup';
@@ -14,7 +15,9 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
   const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { signIn, signUp } = useAuth();
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -40,9 +43,23 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validateForm()) {
-      onSubmit();
+      setIsLoading(true);
+      try {
+        if (type === 'signin') {
+          await signIn(email.trim().toLowerCase(), password);
+        } else {
+          await signUp(name, email.trim().toLowerCase(), password);
+        }
+        onSubmit();
+      } catch (error: any) {
+        setErrors({
+          general: error.message || 'Authentication failed. Please try again.'
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -147,11 +164,12 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
       )}
 
       <TouchableOpacity 
-        style={styles.button}
+        style={[styles.button, isLoading && styles.buttonDisabled]}
         onPress={handleSubmit}
+        disabled={isLoading}
       >
         <Text style={styles.buttonText}>
-          {type === 'signin' ? 'Sign In' : 'Sign Up'}
+          {isLoading ? 'Signing in...' : type === 'signin' ? 'Sign In' : 'Sign Up'}
         </Text>
       </TouchableOpacity>
     </View>
@@ -208,6 +226,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#3D5AF1',
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
   buttonText: {
     color: '#FFFFFF',

@@ -2,6 +2,62 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 
+// Signin route
+router.post('/signin', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Validate required fields
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email and password are required'
+            });
+        }
+
+        // Find user by email
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid email or password'
+            });
+        }
+
+        // Compare password
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid email or password'
+            });
+        }
+
+        // Return success response
+        res.json({
+            success: true,
+            message: 'Sign in successful',
+            user: {
+                id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                mobile: user.mobile,
+                jobRole: user.jobRole,
+                experienceLevel: user.experienceLevel,
+                interviewFocus: user.interviewFocus
+            }
+        });
+
+    } catch (error) {
+        console.error('Signin error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error during sign in. Please try again.'
+        });
+    }
+});
+
 // Signup route
 router.post('/signup', async (req, res) => {
     try {
