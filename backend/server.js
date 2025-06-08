@@ -27,6 +27,12 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Request logging middleware
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+    next();
+});
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 
@@ -45,5 +51,5 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
-    console.log(`Server is accessible at http://192.168.78.249:${PORT}`);
+    console.log(`Server is accessible at http://192.168.177.249:${PORT}`);
 }); 
