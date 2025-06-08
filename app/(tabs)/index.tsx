@@ -35,7 +35,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
           <View style={styles.headerTextContainer}>
             <Text style={[styles.greeting, { color: colors.textSecondary }]}>
-              Hello, {user?.name || 'Guest'}
+              Hello, {user ? `${user.firstName} ${user.lastName}` : 'Guest'}
             </Text>
             <Text style={[styles.title, { color: colors.text }]}>
               Ready to ace your interview?
