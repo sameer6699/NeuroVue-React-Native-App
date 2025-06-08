@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react-native';
+import { Eye, EyeOff, Mail, Lock, User, AlertCircle } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 type AuthFormProps = {
@@ -13,14 +13,37 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
   const router = useRouter();
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
+  const validateForm = () => {
+    const newErrors: { email?: string; password?: string; general?: string } = {};
+
+    if (!email.trim()) {
+      newErrors.email = 'Email is required';
+      newErrors.general = 'Please fill in all required fields';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = 'Please enter a valid email address';
+      newErrors.general = 'Please check your email format';
+    }
+
+    if (!password) {
+      newErrors.password = 'Password is required';
+      newErrors.general = 'Please fill in all required fields';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = () => {
-    onSubmit();
+    if (validateForm()) {
+      onSubmit();
+    }
   };
 
   const navigateToForgotPassword = () => {
@@ -29,6 +52,13 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
 
   return (
     <View style={styles.container}>
+      {errors.general && (
+        <View style={styles.generalErrorContainer}>
+          <AlertCircle size={16} color="#EF4444" />
+          <Text style={styles.generalErrorText}>{errors.general}</Text>
+        </View>
+      )}
+
       {type === 'signup' && (
         <View style={styles.inputContainer}>
           <View style={styles.iconContainer}>
@@ -55,9 +85,20 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
           keyboardType="email-address"
           autoCapitalize="none"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(text) => {
+            setEmail(text);
+            if (errors.email || errors.general) {
+              setErrors(prev => ({ ...prev, email: undefined, general: undefined }));
+            }
+          }}
         />
       </View>
+      {errors.email && (
+        <View style={styles.errorContainer}>
+          <AlertCircle size={14} color="#EF4444" />
+          <Text style={styles.errorText}>{errors.email}</Text>
+        </View>
+      )}
 
       <View style={styles.inputContainer}>
         <View style={styles.iconContainer}>
@@ -69,7 +110,12 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
           placeholderTextColor="#94A3B8"
           secureTextEntry={!showPassword}
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(text) => {
+            setPassword(text);
+            if (errors.password || errors.general) {
+              setErrors(prev => ({ ...prev, password: undefined, general: undefined }));
+            }
+          }}
         />
         <TouchableOpacity 
           onPress={toggleShowPassword}
@@ -82,6 +128,12 @@ export function AuthForm({ type, onSubmit }: AuthFormProps) {
           )}
         </TouchableOpacity>
       </View>
+      {errors.password && (
+        <View style={styles.errorContainer}>
+          <AlertCircle size={14} color="#EF4444" />
+          <Text style={styles.errorText}>{errors.password}</Text>
+        </View>
+      )}
 
       {type === 'signin' && (
         <TouchableOpacity 
@@ -161,5 +213,32 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontFamily: 'Inter-Bold',
     fontSize: 16,
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: -12,
+    marginBottom: 16,
+    marginLeft: 4,
+  },
+  errorText: {
+    color: '#EF4444',
+    fontFamily: 'Inter-Regular',
+    fontSize: 12,
+    marginLeft: 4,
+  },
+  generalErrorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FEE2E2',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  generalErrorText: {
+    color: '#EF4444',
+    fontFamily: 'Inter-Medium',
+    fontSize: 14,
+    marginLeft: 8,
   },
 });

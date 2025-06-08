@@ -216,7 +216,7 @@ export default function SignUp() {
             password: '[REDACTED]'
           });
 
-          const API_URL = 'http://192.168.78.249:5000/api/auth/signup';
+          const API_URL = 'http://192.168.177.249:5000/api/auth/signup';
           console.log('Attempting to connect to:', API_URL);
 
           const response = await fetch(API_URL, {
@@ -229,31 +229,38 @@ export default function SignUp() {
           });
 
           console.log('Response status:', response.status);
+          
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Signup failed');
+          }
+
           const data = await response.json();
           console.log('Response data:', data);
 
-          if (response.ok) {
-            // Show success message
+          if (data.success) {
+            // Show success message with better formatting
             Alert.alert(
-              'Success',
-              data.message,
+              '🎉 Account Created Successfully!',
+              'Your account has been created. You can now sign in to continue.',
               [
                 {
-                  text: 'OK',
-                  onPress: () => router.replace('/(tabs)')
+                  text: 'Sign In',
+                  onPress: () => router.replace('/sign-in'),
+                  style: 'default'
                 }
-              ]
+              ],
+              { cancelable: false }
             );
           } else {
-            // Show error message
-            Alert.alert('Error', data.message || 'Failed to create account');
+            throw new Error(data.message || 'Signup failed');
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('Signup error:', error);
           Alert.alert(
-            'Connection Error',
-            'Unable to connect to the server. Please check your internet connection and try again.',
-            [{ text: 'OK' }]
+            'Signup Failed',
+            error.message || 'Unable to create account. Please try again.',
+            [{ text: 'OK', style: 'default' }]
           );
         }
       }
