@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, Image } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { X } from 'lucide-react-native';
 import { useState } from 'react';
@@ -6,7 +6,7 @@ import { useState } from 'react';
 interface Technology {
   id: string;
   name: string;
-  icon: string;
+  logo: any;
   category: string;
 }
 
@@ -18,37 +18,37 @@ interface TechnologySelectionModalProps {
 
 const technologies: Technology[] = [
   // Programming Languages
-  { id: 'python', name: 'Python', icon: '🐍', category: 'Programming Languages' },
-  { id: 'java', name: 'Java', icon: '☕', category: 'Programming Languages' },
-  { id: 'cpp', name: 'C++', icon: '⚡', category: 'Programming Languages' },
-  { id: 'javascript', name: 'JavaScript', icon: '📜', category: 'Programming Languages' },
-  { id: 'typescript', name: 'TypeScript', icon: '📘', category: 'Programming Languages' },
-  { id: 'golang', name: 'Go', icon: '🚀', category: 'Programming Languages' },
-  { id: 'rust', name: 'Rust', icon: '🦀', category: 'Programming Languages' },
+  { id: 'python', name: 'Python', logo: require('@/assets/images/logos/python-logo.png'), category: 'Programming Languages' },
+  { id: 'java', name: 'Java', logo: require('@/assets/images/logos/java-logo.png'), category: 'Programming Languages' },
+  { id: 'cpp', name: 'C++', logo: require('@/assets/images/logos/cpp-logo.png'), category: 'Programming Languages' },
+  { id: 'javascript', name: 'JavaScript', logo: require('@/assets/images/logos/javascript-logo.png'), category: 'Programming Languages' },
+  { id: 'typescript', name: 'TypeScript', logo: require('@/assets/images/logos/typescript-logo.png'), category: 'Programming Languages' },
+  { id: 'golang', name: 'Go', logo: require('@/assets/images/logos/go-logo.png'), category: 'Programming Languages' },
+  { id: 'rust', name: 'Rust', logo: require('@/assets/images/logos/rust-logo.png'), category: 'Programming Languages' },
   
   // Web Technologies
-  { id: 'react', name: 'React', icon: '⚛️', category: 'Web Technologies' },
-  { id: 'angular', name: 'Angular', icon: '🅰️', category: 'Web Technologies' },
-  { id: 'vue', name: 'Vue.js', icon: '🟢', category: 'Web Technologies' },
-  { id: 'node', name: 'Node.js', icon: '🟩', category: 'Web Technologies' },
+  { id: 'react', name: 'React', logo: '⚛️', category: 'Web Technologies' },
+  { id: 'angular', name: 'Angular', logo: '🅰️', category: 'Web Technologies' },
+  { id: 'vue', name: 'Vue.js', logo: '🟢', category: 'Web Technologies' },
+  { id: 'node', name: 'Node.js', logo: '🟩', category: 'Web Technologies' },
   
   // Backend Technologies
-  { id: 'spring', name: 'Spring Boot', icon: '🌱', category: 'Backend Technologies' },
-  { id: 'django', name: 'Django', icon: '🎸', category: 'Backend Technologies' },
-  { id: 'flask', name: 'Flask', icon: '🍶', category: 'Backend Technologies' },
-  { id: 'express', name: 'Express.js', icon: '🚂', category: 'Backend Technologies' },
+  { id: 'spring', name: 'Spring Boot', logo: '🌱', category: 'Backend Technologies' },
+  { id: 'django', name: 'Django', logo: '🎸', category: 'Backend Technologies' },
+  { id: 'flask', name: 'Flask', logo: '🍶', category: 'Backend Technologies' },
+  { id: 'express', name: 'Express.js', logo: '🚂', category: 'Backend Technologies' },
   
   // Database Technologies
-  { id: 'mysql', name: 'MySQL', icon: '🐬', category: 'Database Technologies' },
-  { id: 'postgresql', name: 'PostgreSQL', icon: '🐘', category: 'Database Technologies' },
-  { id: 'mongodb', name: 'MongoDB', icon: '🍃', category: 'Database Technologies' },
-  { id: 'redis', name: 'Redis', icon: '🔴', category: 'Database Technologies' },
+  { id: 'mysql', name: 'MySQL', logo: '🐬', category: 'Database Technologies' },
+  { id: 'postgresql', name: 'PostgreSQL', logo: '🐘', category: 'Database Technologies' },
+  { id: 'mongodb', name: 'MongoDB', logo: '🍃', category: 'Database Technologies' },
+  { id: 'redis', name: 'Redis', logo: '🔴', category: 'Database Technologies' },
   
   // Cloud & DevOps
-  { id: 'aws', name: 'AWS', icon: '☁️', category: 'Cloud & DevOps' },
-  { id: 'docker', name: 'Docker', icon: '🐳', category: 'Cloud & DevOps' },
-  { id: 'kubernetes', name: 'Kubernetes', icon: '⚓', category: 'Cloud & DevOps' },
-  { id: 'jenkins', name: 'Jenkins', icon: '🤖', category: 'Cloud & DevOps' },
+  { id: 'aws', name: 'AWS', logo: '☁️', category: 'Cloud & DevOps' },
+  { id: 'docker', name: 'Docker', logo: '🐳', category: 'Cloud & DevOps' },
+  { id: 'kubernetes', name: 'Kubernetes', logo: '⚓', category: 'Cloud & DevOps' },
+  { id: 'jenkins', name: 'Jenkins', logo: '🤖', category: 'Cloud & DevOps' },
 ];
 
 export function TechnologySelectionModal({ visible, onClose, onSelect }: TechnologySelectionModalProps) {
@@ -118,7 +118,11 @@ export function TechnologySelectionModal({ visible, onClose, onSelect }: Technol
                 style={[styles.technologyItem, { backgroundColor: colors.card }]}
                 onPress={() => onSelect(tech)}
               >
-                <Text style={styles.technologyIcon}>{tech.icon}</Text>
+                {typeof tech.logo === 'string' ? (
+                  <Text style={styles.technologyIcon}>{tech.logo}</Text>
+                ) : (
+                  <Image source={tech.logo} style={styles.technologyLogo} />
+                )}
                 <Text style={[styles.technologyName, { color: colors.text }]}>
                   {tech.name}
                 </Text>
@@ -188,5 +192,11 @@ const styles = StyleSheet.create({
   technologyName: {
     fontFamily: 'Inter-Medium',
     fontSize: 16,
+  },
+  technologyLogo: {
+    width: 32,
+    height: 32,
+    marginRight: 12,
+    resizeMode: 'contain',
   },
 }); 

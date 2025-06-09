@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, Code, Clock, BookOpen, Zap } from 'lucide-react-native';
@@ -10,7 +11,7 @@ import { TechnologySelectionModal } from '../components/interview/TechnologySele
 interface Technology {
   id: string;
   name: string;
-  icon: string;
+  logo: any;
   category: string;
 }
 
@@ -123,7 +124,11 @@ export default function TechnicalInterviewScreen() {
             >
               <View style={styles.infoHeader}>
                 <View style={[styles.iconContainer, { backgroundColor: '#E0DBFF' }]}>
-                  <Text style={styles.techIcon}>{selectedTech.icon}</Text>
+                  {typeof selectedTech.logo === 'string' ? (
+                    <Text style={styles.techIcon}>{selectedTech.logo}</Text>
+                  ) : (
+                    <Image source={selectedTech.logo} style={styles.techLogo} />
+                  )}
                 </View>
                 <View style={styles.infoContent}>
                   <Text style={[styles.infoTitle, { color: colors.text }]}>
@@ -417,5 +422,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Bold',
     fontSize: 15,
     color: '#FFFFFF',
+  },
+  techLogo: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
   },
 }); 
