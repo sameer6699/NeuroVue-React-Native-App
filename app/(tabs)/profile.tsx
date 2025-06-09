@@ -11,7 +11,7 @@ const THEME_PREFERENCE_KEY = '@theme_preference';
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
-  const { colors, isDark, toggleTheme } = useTheme();
+  const { colors, isDark, toggleTheme, setTheme } = useTheme();
   const { user, signOut } = useAuth();
   const [privacyModalVisible, setPrivacyModalVisible] = useState(false);
 
@@ -21,16 +21,16 @@ export default function ProfileScreen() {
       try {
         const savedTheme = await AsyncStorage.getItem(THEME_PREFERENCE_KEY);
         if (savedTheme !== null) {
-          setIsDark(savedTheme === 'dark');
+          setTheme(savedTheme as 'light' | 'dark');
         } else {
           // If no saved preference, default to light theme
-          setIsDark(false);
+          setTheme('light');
           await AsyncStorage.setItem(THEME_PREFERENCE_KEY, 'light');
         }
       } catch (error) {
         console.error('Error loading theme preference:', error);
         // Default to light theme on error
-        setIsDark(false);
+        setTheme('light');
       }
     };
 
