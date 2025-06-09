@@ -14,6 +14,14 @@ export default function HomeScreen() {
   const { colors } = useTheme();
   const { user } = useAuth();
 
+  const handleStartNewInterview = () => {
+    router.push('/interview-selection');
+  };
+
+  const handleTechnicalCardPress = () => {
+    router.push('/technical-interview');
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView 
@@ -58,7 +66,7 @@ export default function HomeScreen() {
             <Text style={[styles.sectionTitle, { color: colors.text }]}>
               Start New Interview
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleStartNewInterview}>
               <Plus size={20} color={colors.primary} />
             </TouchableOpacity>
           </View>
@@ -73,7 +81,7 @@ export default function HomeScreen() {
               description="JavaScript, React, Data Structures"
               icon={<BookOpen size={24} color="#FFFFFF" />}
               colors={['#915EFF', '#6941C6']}
-              onPress={() => {}}
+              onPress={handleTechnicalCardPress}
             />
             <InterviewCard 
               title="Behavioral"
