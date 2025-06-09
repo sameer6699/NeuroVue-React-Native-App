@@ -216,7 +216,8 @@ export default function SignUp() {
             password: '[REDACTED]'
           });
 
-          const API_URL = 'http://192.168.177.249:5000/api/auth/signup';
+
+          const API_URL = 'http://192.168.31.244:5000/api/auth/signup';
           console.log('Attempting to connect to:', API_URL);
 
           const response = await fetch(API_URL, {

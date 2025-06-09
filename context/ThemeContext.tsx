@@ -60,16 +60,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    const colorScheme = Appearance.getColorScheme();
-    setIsDark(colorScheme === 'dark');
-
-    const subscription = Appearance.addChangeListener(({ colorScheme }) => {
-      setIsDark(colorScheme === 'dark');
-    });
-
-    return () => {
-      subscription.remove();
-    };
+    // Remove the system theme listener since we want to start with light theme
+    // and let users manually toggle if they want dark theme
   }, []);
 
   const toggleTheme = () => {

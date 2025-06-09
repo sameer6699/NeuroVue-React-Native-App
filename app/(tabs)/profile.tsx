@@ -67,7 +67,7 @@ export default function ProfileScreen() {
               <View style={styles.profileInfo}>
                 <View style={styles.nameRow}>
                   <Text style={[styles.profileName, { color: colors.text }]}>
-                    {user?.name || 'Jane Doe'}
+                    {user ? `${user.firstName} ${user.lastName}` : 'Guest'}
                   </Text>
                   <TouchableOpacity style={[styles.iconButton, { backgroundColor: colors.border }]}>
                     <Settings size={20} color={colors.primary} />
