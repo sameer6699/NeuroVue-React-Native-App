@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Switch, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Modal } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Settings, Moon, CircleHelp as HelpCircle, LogOut, ChevronRight, Bell, Shield, CreditCard as Edit, Info } from 'lucide-react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -6,6 +6,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/hooks/useAuth';
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
 
 const THEME_PREFERENCE_KEY = '@theme_preference';
 
@@ -85,9 +86,11 @@ export default function ProfileScreen() {
         >
           <View style={[styles.profileCard, { backgroundColor: colors.card }]}>
             <View style={styles.profileContent}>
-              <Image 
+              <OptimizedImage 
                 source={{ uri: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg' }} 
-                style={styles.profileImage} 
+                style={styles.profileImage}
+                contentFit="cover"
+                cachePolicy="memory-disk"
               />
               <View style={styles.profileInfo}>
                 <View style={styles.nameRow}>

@@ -1,7 +1,8 @@
-import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { X } from 'lucide-react-native';
 import { useState } from 'react';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
 
 interface Technology {
   id: string;
@@ -119,6 +120,30 @@ export function TechnologySelectionModal({ visible, onClose, onSelect }: Technol
 
   const filteredTechnologies = technologies.filter(tech => tech.category === selectedCategory);
 
+  const handleTechnologySelect = (tech: Technology) => {
+    onSelect(tech);
+  };
+
+  const renderTechnology = (tech: Technology) => (
+    <TouchableOpacity
+      key={tech.id}
+      style={[styles.techItem, { backgroundColor: colors.card }]}
+      onPress={() => handleTechnologySelect(tech)}
+    >
+      {typeof tech.logo === 'string' ? (
+        <Text style={styles.emojiLogo}>{tech.logo}</Text>
+      ) : (
+        <OptimizedImage
+          source={tech.logo}
+          style={styles.techLogo}
+          contentFit="contain"
+          cachePolicy="memory-disk"
+        />
+      )}
+      <Text style={[styles.techName, { color: colors.text }]}>{tech.name}</Text>
+    </TouchableOpacity>
+  );
+
   return (
     <Modal
       visible={visible}
@@ -172,22 +197,7 @@ export function TechnologySelectionModal({ visible, onClose, onSelect }: Technol
             style={styles.technologyList}
             showsVerticalScrollIndicator={false}
           >
-            {filteredTechnologies.map((tech) => (
-              <TouchableOpacity
-                key={tech.id}
-                style={[styles.technologyItem, { backgroundColor: colors.card }]}
-                onPress={() => onSelect(tech)}
-              >
-                {typeof tech.logo === 'string' ? (
-                  <Text style={styles.technologyIcon}>{tech.logo}</Text>
-                ) : (
-                  <Image source={tech.logo} style={styles.technologyLogo} />
-                )}
-                <Text style={[styles.technologyName, { color: colors.text }]}>
-                  {tech.name}
-                </Text>
-              </TouchableOpacity>
-            ))}
+            {filteredTechnologies.map((tech) => renderTechnology(tech))}
           </ScrollView>
         </View>
       </View>
@@ -238,25 +248,24 @@ const styles = StyleSheet.create({
   technologyList: {
     maxHeight: 400,
   },
-  technologyItem: {
+  techItem: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
     borderRadius: 12,
     marginBottom: 8,
   },
-  technologyIcon: {
+  emojiLogo: {
     fontSize: 24,
     marginRight: 12,
   },
-  technologyName: {
+  techName: {
     fontFamily: 'Inter-Medium',
     fontSize: 16,
   },
-  technologyLogo: {
+  techLogo: {
     width: 32,
     height: 32,
     marginRight: 12,
-    resizeMode: 'contain',
   },
 }); 
