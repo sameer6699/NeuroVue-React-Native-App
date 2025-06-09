@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Appearance, ColorSchemeName } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type ThemeColors = {
   primary: string;
@@ -47,6 +48,8 @@ const darkColors: ThemeColors = {
   error: '#EF4444',
 };
 
+const THEME_PREFERENCE_KEY = '@theme_preference';
+
 const ThemeContext = createContext<ThemeContextType>({
   isDark: false,
   colors: lightColors,
@@ -59,17 +62,46 @@ export const useTheme = () => useContext(ThemeContext);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isDark, setIsDark] = useState(false);
 
+  // Load saved theme preference
   useEffect(() => {
-    // Remove the system theme listener since we want to start with light theme
-    // and let users manually toggle if they want dark theme
+    const loadThemePreference = async () => {
+      try {
+        const savedTheme = await AsyncStorage.getItem(THEME_PREFERENCE_KEY);
+        if (savedTheme !== null) {
+          setIsDark(savedTheme === 'dark');
+        } else {
+          // If no saved preference, default to light theme
+          setIsDark(false);
+          await AsyncStorage.setItem(THEME_PREFERENCE_KEY, 'light');
+        }
+      } catch (error) {
+        console.error('Error loading theme preference:', error);
+        // Default to light theme on error
+        setIsDark(false);
+      }
+    };
+
+    loadThemePreference();
   }, []);
 
-  const toggleTheme = () => {
-    setIsDark(!isDark);
+  const toggleTheme = async () => {
+    const newTheme = !isDark;
+    setIsDark(newTheme);
+    try {
+      await AsyncStorage.setItem(THEME_PREFERENCE_KEY, newTheme ? 'dark' : 'light');
+    } catch (error) {
+      console.error('Error saving theme preference:', error);
+    }
   };
 
-  const setTheme = (scheme: 'light' | 'dark') => {
-    setIsDark(scheme === 'dark');
+  const setTheme = async (scheme: 'light' | 'dark') => {
+    const newTheme = scheme === 'dark';
+    setIsDark(newTheme);
+    try {
+      await AsyncStorage.setItem(THEME_PREFERENCE_KEY, scheme);
+    } catch (error) {
+      console.error('Error saving theme preference:', error);
+    }
   };
 
   return (

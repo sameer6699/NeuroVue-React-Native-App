@@ -82,6 +82,7 @@ export default function HomeScreen() {
               icon={<BookOpen size={24} color="#FFFFFF" />}
               colors={['#915EFF', '#6941C6']}
               onPress={handleTechnicalCardPress}
+              onPress={handleTechnicalCardPress}
             />
             <InterviewCard 
               title="Behavioral"
