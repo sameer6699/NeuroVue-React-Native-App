@@ -4,13 +4,38 @@ import { Settings, Moon, CircleHelp as HelpCircle, LogOut, ChevronRight, Bell, S
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/hooks/useAuth';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const THEME_PREFERENCE_KEY = '@theme_preference';
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { colors, isDark, toggleTheme } = useTheme();
   const { user, signOut } = useAuth();
   const [privacyModalVisible, setPrivacyModalVisible] = useState(false);
+
+  // Load saved theme preference
+  useEffect(() => {
+    const loadThemePreference = async () => {
+      try {
+        const savedTheme = await AsyncStorage.getItem(THEME_PREFERENCE_KEY);
+        if (savedTheme !== null) {
+          setIsDark(savedTheme === 'dark');
+        } else {
+          // If no saved preference, default to light theme
+          setIsDark(false);
+          await AsyncStorage.setItem(THEME_PREFERENCE_KEY, 'light');
+        }
+      } catch (error) {
+        console.error('Error loading theme preference:', error);
+        // Default to light theme on error
+        setIsDark(false);
+      }
+    };
+
+    loadThemePreference();
+  }, []);
 
   const PrivacyPolicyModal = () => (
     <Modal
