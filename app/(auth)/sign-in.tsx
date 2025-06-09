@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ArrowRight } from 'lucide-react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTheme } from '@/hooks/useTheme';
 import { AuthForm } from '@/components/auth/AuthForm';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
 
 export default function SignIn() {
   const router = useRouter();
@@ -31,10 +32,11 @@ export default function SignIn() {
             entering={FadeInDown.delay(100).duration(700)} 
             style={styles.logoContainer}
           >
-            <Image
+            <OptimizedImage
               source={require('@/assets/images/main-logo.png')}
               style={styles.logo}
-              resizeMode="contain"
+              contentFit="contain"
+              cachePolicy="memory-disk"
             />
             <Text style={[styles.logoText, { color: '#1E293B' }]}>NeuroVue</Text>
             <Text style={[styles.tagline, { color: '#64748B' }]}>Your AI Interview Assistant</Text>
@@ -62,17 +64,19 @@ export default function SignIn() {
 
             <View style={styles.socialButtonsContainer}>
               <TouchableOpacity style={styles.socialButton}>
-                <Image
+                <OptimizedImage
                   source={require('@/assets/images/google-logo.png')}
                   style={styles.socialLogo}
-                  resizeMode="contain"
+                  contentFit="contain"
+                  cachePolicy="memory-disk"
                 />
               </TouchableOpacity>
               <TouchableOpacity style={styles.socialButton}>
-                <Image
+                <OptimizedImage
                   source={require('@/assets/images/linkedin-logo.png')}
                   style={styles.socialLogo}
-                  resizeMode="contain"
+                  contentFit="contain"
+                  cachePolicy="memory-disk"
                 />
               </TouchableOpacity>
             </View>

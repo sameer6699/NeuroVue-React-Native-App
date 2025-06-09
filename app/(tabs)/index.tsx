@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Search, Plus, ArrowRight, Mic, Video, BookOpen } from 'lucide-react-native';
@@ -7,6 +7,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { InterviewCard } from '@/components/home/InterviewCard';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { useAuth } from '@/hooks/useAuth';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
@@ -36,9 +37,11 @@ export default function HomeScreen() {
           style={styles.header}
         >
           <TouchableOpacity style={styles.profileButton}>
-            <Image 
+            <OptimizedImage 
               source={{ uri: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg' }} 
-              style={styles.profileImage} 
+              style={styles.profileImage}
+              contentFit="cover"
+              cachePolicy="memory-disk"
             />
           </TouchableOpacity>
           <View style={styles.headerTextContainer}>

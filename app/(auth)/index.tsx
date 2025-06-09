@@ -1,6 +1,7 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInUp } from 'react-native-reanimated';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
 
 const { width } = Dimensions.get('window');
 
@@ -21,10 +22,11 @@ export default function GettingStarted() {
         entering={FadeInUp.delay(100).duration(700)} 
         style={styles.logoContainer}
       >
-        <Image
+        <OptimizedImage
           source={require('@/assets/images/main-logo.png')}
           style={styles.logo}
-          resizeMode="contain"
+          contentFit="contain"
+          cachePolicy="memory-disk"
         />
         <Text style={styles.logoText}>NeuroVue</Text>
         <Text style={styles.tagline}>Your AI Interview Assistant</Text>
