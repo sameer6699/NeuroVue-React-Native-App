@@ -14,12 +14,12 @@ export default function HomeScreen() {
   const { colors } = useTheme();
   const { user } = useAuth();
 
-  const handleStartNewInterview = () => {
-    router.push('/interview-selection');
-  };
-
   const handleTechnicalCardPress = () => {
     router.push('/technical-interview');
+  };
+
+  const handleNewInterviewPress = () => {
+    router.push('/interview-selection');
   };
 
   return (
@@ -66,7 +66,7 @@ export default function HomeScreen() {
             <Text style={[styles.sectionTitle, { color: colors.text }]}>
               Start New Interview
             </Text>
-            <TouchableOpacity onPress={handleStartNewInterview}>
+            <TouchableOpacity onPress={handleNewInterviewPress}>
               <Plus size={20} color={colors.primary} />
             </TouchableOpacity>
           </View>
