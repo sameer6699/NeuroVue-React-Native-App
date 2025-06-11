@@ -1,78 +1,113 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowLeft, Send, Mic, MicOff } from 'lucide-react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import { ArrowLeft, Mic, MicOff, Video, VideoOff, MessageCircle, Camera } from 'lucide-react-native';
+import Animated, { FadeInDown, useAnimatedStyle, withRepeat, withTiming } from 'react-native-reanimated';
 import { useTheme } from '@/hooks/useTheme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
+
+const { width, height } = Dimensions.get('window');
 
 export default function AIHRInterviewScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colors } = useTheme();
   const [isRecording, setIsRecording] = useState(false);
-  const [userInput, setUserInput] = useState('');
+  const [isVideoOn, setIsVideoOn] = useState(true);
+
+  const pulseAnimation = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          scale: withRepeat(
+            withTiming(1.2, { duration: 1000 }),
+            -1,
+            true
+          ),
+        },
+      ],
+    };
+  });
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <ArrowLeft size={24} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={[styles.title, { color: colors.text }]}>
-          HR Interview
-        </Text>
+      <LinearGradient
+        colors={['rgba(0,0,0,0.7)', 'transparent']}
+        style={[styles.headerGradient, { paddingTop: insets.top }]}
+      >
+        <View style={styles.header}>
+          <TouchableOpacity 
+            style={[styles.backButton, { backgroundColor: 'rgba(255,255,255,0.2)' }]}
+            onPress={() => router.back()}
+          >
+            <ArrowLeft size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+          <Text style={styles.title}>
+            HR Interview
+          </Text>
+        </View>
+      </LinearGradient>
+
+      {/* Video Section */}
+      <View style={styles.videoSection}>
+        <View style={styles.videoContainer}>
+          <View style={styles.videoPlaceholder}>
+            <Video size={32} color="#666" />
+            <Text style={styles.videoPlaceholderText}>Camera Feed</Text>
+          </View>
+          
+          {/* Video Controls Overlay */}
+          <View style={styles.videoControls}>
+            <View style={styles.videoControlsBottom}>
+              <View style={styles.liveIndicatorContainer}>
+                <View style={[styles.liveIndicator, { backgroundColor: '#FF4444' }]} />
+                <Text style={styles.liveIndicatorText}>LIVE</Text>
+              </View>
+              <TouchableOpacity 
+                style={[
+                  styles.videoButton,
+                  { backgroundColor: isVideoOn ? 'rgba(145, 94, 255, 0.8)' : '#FF4444' }
+                ]}
+                onPress={() => setIsVideoOn(!isVideoOn)}
+              >
+                {isVideoOn ? <Video size={24} color="#FFFFFF" /> : <VideoOff size={24} color="#FFFFFF" />}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
       </View>
 
-      <ScrollView 
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        <Animated.View 
-          entering={FadeInDown.delay(100).duration(500)}
-          style={styles.interviewContainer}
+      {/* Interviewer Message */}
+      <BlurView intensity={80} style={styles.interviewerMessageContainer}>
+        <LinearGradient
+          colors={['rgba(145, 94, 255, 0.1)', 'rgba(145, 94, 255, 0.05)']}
+          style={styles.messageGradient}
         >
-          <View style={[styles.messageContainer, { backgroundColor: colors.card }]}>
-            <Text style={[styles.messageText, { color: colors.text }]}>
-              Hello! I'm your AI HR interviewer. Let's start with a common question: Tell me about yourself and your professional background.
-            </Text>
+          <View style={styles.messageIconContainer}>
+            <MessageCircle size={24} color={colors.primary} />
           </View>
-        </Animated.View>
-      </ScrollView>
+          <Text style={[styles.interviewerMessage, { color: colors.text }]}>
+            Hello! I'm your AI HR interviewer. Let's start with a common question: Tell me about yourself and your professional background.
+          </Text>
+        </LinearGradient>
+      </BlurView>
 
-      <View style={[styles.inputContainer, { backgroundColor: colors.card }]}>
-        <TextInput
-          style={[styles.input, { 
-            color: colors.text,
-            backgroundColor: colors.background
-          }]}
-          placeholder="Type your response..."
-          placeholderTextColor={colors.textSecondary}
-          value={userInput}
-          onChangeText={setUserInput}
-          multiline
-        />
-        <View style={styles.inputButtons}>
+      {/* Controls */}
+      <View style={styles.controlsContainer}>
+        <View style={styles.micButtonContainer}>
           <TouchableOpacity 
-            style={[styles.micButton, { backgroundColor: isRecording ? colors.error : colors.primary }]}
+            style={[styles.micButton, { 
+              backgroundColor: isRecording ? '#FF4444' : colors.primary,
+            }]}
             onPress={() => setIsRecording(!isRecording)}
           >
-            {isRecording ? <MicOff size={20} color="#FFFFFF" /> : <Mic size={20} color="#FFFFFF" />}
+            {isRecording ? <MicOff size={24} color="#FFFFFF" /> : <Mic size={24} color="#FFFFFF" />}
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.sendButton, { backgroundColor: colors.primary }]}
-            onPress={() => {
-              if (userInput.trim()) {
-                // Handle sending message
-                setUserInput('');
-              }
-            }}
-          >
-            <Send size={20} color="#FFFFFF" />
-          </TouchableOpacity>
+          <Text style={[styles.micButtonLabel, { color: colors.textSecondary }]}>
+            {isRecording ? 'Stop Recording' : 'Start Recording'}
+          </Text>
         </View>
       </View>
     </View>
@@ -83,6 +118,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  headerGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -92,59 +134,154 @@ const styles = StyleSheet.create({
   backButton: {
     padding: 8,
     marginRight: 8,
+    borderRadius: 12,
   },
   title: {
     fontFamily: 'Inter-Bold',
     fontSize: 24,
+    color: '#FFFFFF',
   },
-  content: {
-    padding: 16,
-    flexGrow: 1,
+  videoSection: {
+    height: height * 0.5,
+    backgroundColor: '#000',
   },
-  interviewContainer: {
+  videoContainer: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  messageContainer: {
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 16,
-    maxWidth: '85%',
+  videoPlaceholder: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#1a1a1a',
   },
-  messageText: {
+  videoPlaceholderText: {
     fontFamily: 'Inter-Regular',
     fontSize: 16,
-    lineHeight: 24,
+    color: '#FFFFFF',
   },
-  inputContainer: {
+  videoControls: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.1)',
   },
-  input: {
-    borderRadius: 12,
-    padding: 12,
-    fontFamily: 'Inter-Regular',
-    fontSize: 16,
-    maxHeight: 100,
-  },
-  inputButtons: {
+  videoControlsBottom: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: 8,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 12,
+    borderRadius: 12,
+  },
+  liveIndicatorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 68, 68, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  liveIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 6,
+  },
+  liveIndicatorText: {
+    color: '#FFFFFF',
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 12,
+  },
+  videoButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
+  },
+  interviewerMessageContainer: {
+    margin: 16,
+    borderRadius: 20,
+    overflow: 'hidden',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
+  },
+  messageGradient: {
+    padding: 20,
+  },
+  messageIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(145, 94, 255, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  interviewerMessage: {
+    fontFamily: 'Inter-Medium',
+    fontSize: 20,
+    lineHeight: 28,
+    letterSpacing: 0.3,
+  },
+  controlsContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 16,
+    paddingBottom: Platform.OS === 'ios' ? 32 : 16,
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+  },
+  micButtonContainer: {
+    alignItems: 'center',
   },
   micButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 8,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
   },
-  sendButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+  micButtonLabel: {
+    fontFamily: 'Inter-Medium',
+    fontSize: 14,
+    marginTop: 8,
   },
 }); 
