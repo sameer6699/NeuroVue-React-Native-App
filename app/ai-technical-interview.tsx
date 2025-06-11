@@ -1,11 +1,14 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Platform } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowLeft, Upload, ChevronDown } from 'lucide-react-native';
+import { ArrowLeft, Upload, ChevronDown, FileText } from 'lucide-react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTheme } from '@/hooks/useTheme';
 import { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
+import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system';
+import React from 'react';
 
 export default function AITechnicalInterviewScreen() {
   const insets = useSafeAreaInsets();
@@ -17,6 +20,7 @@ export default function AITechnicalInterviewScreen() {
   const [selectedExperience, setSelectedExperience] = useState('');
   const [company, setCompany] = useState('');
   const [resumeAttached, setResumeAttached] = useState(false);
+  const [resumeFile, setResumeFile] = useState<DocumentPicker.DocumentPickerAsset | null>(null);
 
   const difficultyLevels = ['Easy', 'Medium', 'Advanced', 'Expert'];
   const experienceRanges = ['Fresher 1-5', '5-10 years', '10-15 years', '15+ years'];
@@ -36,6 +40,37 @@ export default function AITechnicalInterviewScreen() {
         return '#F44336'; // Red
       default:
         return '#9E9E9E'; // Gray
+    }
+  };
+
+  const handleResumeUpload = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+        copyToCacheDirectory: true,
+      });
+
+      if (result.canceled) {
+        return;
+      }
+
+      const file = result.assets[0];
+      
+      // Check file size (5MB limit)
+      const fileInfo = await FileSystem.getInfoAsync(file.uri);
+      if (fileInfo.exists && fileInfo.size) {
+        const fileSizeInMB = fileInfo.size / (1024 * 1024);
+        if (fileSizeInMB > 5) {
+          alert('File size should be less than 5MB');
+          return;
+        }
+      }
+
+      setResumeFile(file);
+      setResumeAttached(true);
+    } catch (error) {
+      console.error('Error picking document:', error);
+      alert('Error uploading resume. Please try again.');
     }
   };
 
@@ -83,16 +118,30 @@ export default function AITechnicalInterviewScreen() {
           </Text>
           <TouchableOpacity 
             style={[styles.uploadCard, { backgroundColor: colors.card }]}
-            onPress={() => setResumeAttached(true)}
+            onPress={handleResumeUpload}
           >
             <View style={styles.uploadContent}>
-              <Upload size={24} color={colors.primary} />
-              <Text style={[styles.uploadText, { color: colors.text }]}>
-                {resumeAttached ? 'Resume Attached' : 'Upload Resume'}
-              </Text>
-              <Text style={[styles.uploadSubtext, { color: colors.textSecondary }]}>
-                {resumeAttached ? 'Tap to change' : 'PDF, DOC, DOCX (Max 5MB)'}
-              </Text>
+              {resumeAttached ? (
+                <>
+                  <FileText size={24} color={colors.primary} />
+                  <Text style={[styles.uploadText, { color: colors.text }]}>
+                    {resumeFile?.name || 'Resume Attached'}
+                  </Text>
+                  <Text style={[styles.uploadSubtext, { color: colors.textSecondary }]}>
+                    Tap to change
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Upload size={24} color={colors.primary} />
+                  <Text style={[styles.uploadText, { color: colors.text }]}>
+                    Upload Resume
+                  </Text>
+                  <Text style={[styles.uploadSubtext, { color: colors.textSecondary }]}>
+                    PDF, DOC, DOCX (Max 5MB)
+                  </Text>
+                </>
+              )}
             </View>
           </TouchableOpacity>
         </Animated.View>
@@ -160,10 +209,10 @@ export default function AITechnicalInterviewScreen() {
             styles.startButton, 
             { 
               backgroundColor: colors.primary,
-              opacity: (!selectedDifficulty || !selectedExperience || !company) ? 0.5 : 1
+              opacity: (!selectedDifficulty || !selectedExperience || !company || !resumeAttached) ? 0.5 : 1
             }
           ]}
-          disabled={!selectedDifficulty || !selectedExperience || !company}
+          disabled={!selectedDifficulty || !selectedExperience || !company || !resumeAttached}
           onPress={() => {}}
         >
           <Text style={styles.startButtonText}>Start Interview</Text>
