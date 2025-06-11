@@ -95,7 +95,7 @@ export default function HomeScreen() {
             />
             <InterviewCard 
               title="Mock Video"
-              description="Realistic interview simulation"
+              description="Record your interview simulation"
               icon={<Video size={24} color="#FFFFFF" />}
               colors={['#1C82AD', '#3D5AF1']}
               onPress={() => {}}
