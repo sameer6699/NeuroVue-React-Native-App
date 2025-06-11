@@ -217,7 +217,7 @@ export default function SignUp() {
           });
 
 
-          const API_URL = 'http://192.168.31.244:5000/api/auth/signup';
+          const API_URL = 'http://192.168.29.28:5000/api/auth/signup';
           console.log('Attempting to connect to:', API_URL);
 
           const response = await fetch(API_URL, {

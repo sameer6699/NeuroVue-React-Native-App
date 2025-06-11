@@ -51,7 +51,7 @@ export default function InterviewSelectionScreen() {
 
           <TouchableOpacity 
             style={[styles.card, { backgroundColor: colors.card }]}
-            onPress={() => {}}
+            onPress={() => router.push('/hr-interview')}
           >
             <View style={[styles.iconContainer, { backgroundColor: '#FFE4D9' }]}>
               <Users size={24} color="#FE7A36" />
