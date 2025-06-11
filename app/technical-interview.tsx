@@ -180,15 +180,11 @@ export default function TechnicalInterviewScreen() {
                 </View>
               </View>
               <View style={[styles.statsContainer, { marginTop: 16 }]}>
-                <View style={styles.statItem}>
+                <View style={[styles.statItem, { marginTop: 12, marginHorizontal: 8 }]}>
                   <Clock size={18} color={colors.textSecondary} />
                   <Text style={[styles.statText, { color: colors.textSecondary, fontSize: 13 }]}>30 min</Text>
                 </View>
-                <View style={styles.statItem}>
-                  <BookOpen size={18} color={colors.textSecondary} />
-                  <Text style={[styles.statText, { color: colors.textSecondary, fontSize: 13 }]}>15 Questions</Text>
-                </View>
-                <View style={styles.statItem}>
+                <View style={[styles.statItem, { marginTop: 12, marginHorizontal: 8 }]}>
                   <Zap size={18} color={colors.textSecondary} />
                   <Text style={[styles.statText, { color: colors.textSecondary, fontSize: 13 }]}>Intermediate</Text>
                 </View>
@@ -444,18 +440,22 @@ const styles = StyleSheet.create({
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingBottom: 16,
     borderTopWidth: 1,
     borderTopColor: 'rgba(0,0,0,0.1)',
+    paddingTop: 8,
   },
   statItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    flex: 1,
+    justifyContent: 'center',
   },
   statText: {
     fontFamily: 'Inter-Medium',
+    fontSize: 13,
   },
   section: {
     marginBottom: 24,

@@ -13,23 +13,31 @@ export default function AITechnicalInterviewScreen() {
   const { colors } = useTheme();
   const params = useLocalSearchParams();
   
-  const [selectedRole, setSelectedRole] = useState('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const [selectedExperience, setSelectedExperience] = useState('');
   const [company, setCompany] = useState('');
   const [resumeAttached, setResumeAttached] = useState(false);
 
-  const experienceLevels = ['Fresher', 'Mid-Level', 'Experienced'];
-  const roles = [
-    'Frontend Developer',
-    'Backend Developer',
-    'Full Stack Developer',
-    'Mobile Developer',
-    'DevOps Engineer',
-    'Data Engineer'
-  ];
+  const difficultyLevels = ['Easy', 'Medium', 'Advanced', 'Expert'];
+  const experienceRanges = ['Fresher 1-5', '5-10 years', '10-15 years', '15+ years'];
 
   // Get the selected technology from the URL params
   const selectedTechnology = params.technology as string;
+
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case 'Easy':
+        return '#4CAF50'; // Green
+      case 'Medium':
+        return '#FFC107'; // Yellow
+      case 'Advanced':
+        return '#2196F3'; // Blue
+      case 'Expert':
+        return '#F44336'; // Red
+      default:
+        return '#9E9E9E'; // Gray
+    }
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -57,9 +65,12 @@ export default function AITechnicalInterviewScreen() {
             Selected Technology
           </Text>
           <View style={[styles.techCard, { backgroundColor: colors.card }]}>
-            <Text style={[styles.techName, { color: colors.text }]}>
-              {selectedTechnology.charAt(0).toUpperCase() + selectedTechnology.slice(1)}
-            </Text>
+            <View style={styles.techHeader}>
+              <View style={[styles.difficultyDot, { backgroundColor: getDifficultyColor(selectedDifficulty) }]} />
+              <Text style={[styles.techName, { color: colors.text }]}>
+                {selectedTechnology.charAt(0).toUpperCase() + selectedTechnology.slice(1)}
+              </Text>
+            </View>
           </View>
         </Animated.View>
 
@@ -91,36 +102,19 @@ export default function AITechnicalInterviewScreen() {
           style={styles.section}
         >
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Role & Experience
+            Customize AI Model
           </Text>
           
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.text }]}>Select Role</Text>
+            <Text style={[styles.label, { color: colors.text }]}>Difficulty Level</Text>
             <View style={[styles.pickerContainer, { backgroundColor: colors.card }]}>
               <Picker
-                selectedValue={selectedRole}
-                onValueChange={(value) => setSelectedRole(value)}
+                selectedValue={selectedDifficulty}
+                onValueChange={(value) => setSelectedDifficulty(value)}
                 style={[styles.picker, { color: colors.text }]}
               >
-                <Picker.Item label="Select a role" value="" />
-                {roles.map((role) => (
-                  <Picker.Item key={role} label={role} value={role} />
-                ))}
-              </Picker>
-              <ChevronDown size={20} color={colors.textSecondary} style={styles.pickerIcon} />
-            </View>
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.text }]}>Experience Level</Text>
-            <View style={[styles.pickerContainer, { backgroundColor: colors.card }]}>
-              <Picker
-                selectedValue={selectedExperience}
-                onValueChange={(value) => setSelectedExperience(value)}
-                style={[styles.picker, { color: colors.text }]}
-              >
-                <Picker.Item label="Select experience level" value="" />
-                {experienceLevels.map((level) => (
+                <Picker.Item label="Select difficulty level" value="" />
+                {difficultyLevels.map((level) => (
                   <Picker.Item key={level} label={level} value={level} />
                 ))}
               </Picker>
@@ -129,7 +123,24 @@ export default function AITechnicalInterviewScreen() {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.text }]}>Company (Optional)</Text>
+            <Text style={[styles.label, { color: colors.text }]}>Experience Range</Text>
+            <View style={[styles.pickerContainer, { backgroundColor: colors.card }]}>
+              <Picker
+                selectedValue={selectedExperience}
+                onValueChange={(value) => setSelectedExperience(value)}
+                style={[styles.picker, { color: colors.text }]}
+              >
+                <Picker.Item label="Select experience range" value="" />
+                {experienceRanges.map((range) => (
+                  <Picker.Item key={range} label={range} value={range} />
+                ))}
+              </Picker>
+              <ChevronDown size={20} color={colors.textSecondary} style={styles.pickerIcon} />
+            </View>
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Text style={[styles.label, { color: colors.text }]}>Company Name</Text>
             <TextInput
               style={[styles.input, { 
                 backgroundColor: colors.card,
@@ -149,10 +160,10 @@ export default function AITechnicalInterviewScreen() {
             styles.startButton, 
             { 
               backgroundColor: colors.primary,
-              opacity: (!selectedRole || !selectedExperience) ? 0.5 : 1
+              opacity: (!selectedDifficulty || !selectedExperience || !company) ? 0.5 : 1
             }
           ]}
-          disabled={!selectedRole || !selectedExperience}
+          disabled={!selectedDifficulty || !selectedExperience || !company}
           onPress={() => {}}
         >
           <Text style={styles.startButtonText}>Start Interview</Text>
@@ -284,6 +295,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 12,
     elevation: 4,
+  },
+  techHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  difficultyDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#9E9E9E',
   },
   techName: {
     fontFamily: 'Inter-Bold',
