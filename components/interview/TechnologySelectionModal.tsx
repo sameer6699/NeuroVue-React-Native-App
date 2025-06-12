@@ -238,15 +238,19 @@ const styles = StyleSheet.create({
   },
   categoryContainer: {
     marginBottom: 20,
+    minHeight: 50,
   },
   categoryContent: {
     paddingRight: 16,
+    paddingVertical: 8,
   },
   categoryButton: {
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 20,
     marginRight: 10,
+    minHeight: 40,
+    justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -259,6 +263,7 @@ const styles = StyleSheet.create({
   categoryText: {
     fontFamily: 'Inter-Medium',
     fontSize: 15,
+    textAlign: 'center',
   },
   technologyList: {
     maxHeight: 400,

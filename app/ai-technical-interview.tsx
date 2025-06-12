@@ -1,223 +1,110 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Platform } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Platform } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowLeft, Upload, ChevronDown, FileText } from 'lucide-react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import { ArrowLeft, Mic, MicOff, Video, VideoOff, MessageCircle, Camera } from 'lucide-react-native';
+import Animated, { FadeInDown, useAnimatedStyle, withRepeat, withTiming } from 'react-native-reanimated';
 import { useTheme } from '@/hooks/useTheme';
-import { useState } from 'react';
-import { Picker } from '@react-native-picker/picker';
-import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system';
-import React from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
+
+const { width, height } = Dimensions.get('window');
 
 export default function AITechnicalInterviewScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colors } = useTheme();
-  const params = useLocalSearchParams();
-  
-  const [selectedDifficulty, setSelectedDifficulty] = useState('');
-  const [selectedExperience, setSelectedExperience] = useState('');
-  const [company, setCompany] = useState('');
-  const [resumeAttached, setResumeAttached] = useState(false);
-  const [resumeFile, setResumeFile] = useState<DocumentPicker.DocumentPickerAsset | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isVideoOn, setIsVideoOn] = useState(true);
 
-  const difficultyLevels = ['Easy', 'Medium', 'Advanced', 'Expert'];
-  const experienceRanges = ['Fresher 1-5', '5-10 years', '10-15 years', '15+ years'];
-
-  // Get the selected technology from the URL params
-  const selectedTechnology = params.technology as string;
-
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'Easy':
-        return '#4CAF50'; // Green
-      case 'Medium':
-        return '#FFC107'; // Yellow
-      case 'Advanced':
-        return '#2196F3'; // Blue
-      case 'Expert':
-        return '#F44336'; // Red
-      default:
-        return '#9E9E9E'; // Gray
-    }
-  };
-
-  const handleResumeUpload = async () => {
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-        copyToCacheDirectory: true,
-      });
-
-      if (result.canceled) {
-        return;
-      }
-
-      const file = result.assets[0];
-      
-      // Check file size (5MB limit)
-      const fileInfo = await FileSystem.getInfoAsync(file.uri);
-      if (fileInfo.exists && fileInfo.size) {
-        const fileSizeInMB = fileInfo.size / (1024 * 1024);
-        if (fileSizeInMB > 5) {
-          alert('File size should be less than 5MB');
-          return;
-        }
-      }
-
-      setResumeFile(file);
-      setResumeAttached(true);
-    } catch (error) {
-      console.error('Error picking document:', error);
-      alert('Error uploading resume. Please try again.');
-    }
-  };
+  const pulseAnimation = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          scale: withRepeat(
+            withTiming(1.2, { duration: 1000 }),
+            -1,
+            true
+          ),
+        },
+      ],
+    };
+  });
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <ArrowLeft size={24} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={[styles.title, { color: colors.text }]}>
-          AI Technical Interview
-        </Text>
+      <LinearGradient
+        colors={['rgba(0,0,0,0.7)', 'transparent']}
+        style={[styles.headerGradient, { paddingTop: insets.top }]}
+      >
+        <View style={styles.header}>
+          <TouchableOpacity 
+            style={[styles.backButton, { backgroundColor: 'rgba(255,255,255,0.2)' }]}
+            onPress={() => router.back()}
+          >
+            <ArrowLeft size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+          <Text style={styles.title}>
+            Technical Interview
+          </Text>
+        </View>
+      </LinearGradient>
+
+      {/* Video Section */}
+      <View style={styles.videoSection}>
+        <View style={styles.videoContainer}>
+          <View style={styles.videoPlaceholder}>
+            <Video size={32} color="#666" />
+            <Text style={styles.videoPlaceholderText}>Camera Feed</Text>
+          </View>
+          
+          {/* Video Controls Overlay */}
+          <View style={styles.videoControls}>
+            <View style={styles.videoControlsBottom}>
+              <View style={styles.liveIndicatorContainer}>
+                <View style={[styles.liveIndicator, { backgroundColor: '#FF4444' }]} />
+                <Text style={styles.liveIndicatorText}>LIVE</Text>
+              </View>
+              <TouchableOpacity 
+                style={[
+                  styles.videoButton,
+                  { backgroundColor: isVideoOn ? 'rgba(145, 94, 255, 0.8)' : '#FF4444' }
+                ]}
+                onPress={() => setIsVideoOn(!isVideoOn)}
+              >
+                {isVideoOn ? <Video size={24} color="#FFFFFF" /> : <VideoOff size={24} color="#FFFFFF" />}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
       </View>
 
-      <ScrollView 
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        <Animated.View 
-          entering={FadeInDown.delay(100).duration(500)}
-          style={styles.section}
+      {/* Interviewer Message */}
+      <BlurView intensity={20} style={styles.interviewerMessageContainer}>
+        <LinearGradient
+          colors={['rgba(145, 94, 255, 0.15)', 'rgba(145, 94, 255, 0.05)']}
+          style={styles.messageGradient}
         >
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Selected Technology
-          </Text>
-          <View style={[styles.techCard, { backgroundColor: colors.card }]}>
-            <View style={styles.techHeader}>
-              <View style={[styles.difficultyDot, { backgroundColor: getDifficultyColor(selectedDifficulty) }]} />
-              <Text style={[styles.techName, { color: colors.text }]}>
-                {selectedTechnology.charAt(0).toUpperCase() + selectedTechnology.slice(1)}
-              </Text>
-            </View>
+          <View style={styles.messageContent}>
+            <MessageCircle size={24} color={colors.primary} style={styles.messageIcon} />
+            <Text style={[styles.interviewerMessage, { color: colors.text }]}>
+              Hello! I'm your AI Technical interviewer. Let's start with a coding question: Can you explain the concept of time complexity and space complexity in algorithms?
+            </Text>
           </View>
-        </Animated.View>
+        </LinearGradient>
+      </BlurView>
 
-        <Animated.View 
-          entering={FadeInDown.delay(200).duration(500)}
-          style={styles.section}
-        >
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Resume Upload
-          </Text>
-          <TouchableOpacity 
-            style={[styles.uploadCard, { backgroundColor: colors.card }]}
-            onPress={handleResumeUpload}
-          >
-            <View style={styles.uploadContent}>
-              {resumeAttached ? (
-                <>
-                  <FileText size={24} color={colors.primary} />
-                  <Text style={[styles.uploadText, { color: colors.text }]}>
-                    {resumeFile?.name || 'Resume Attached'}
-                  </Text>
-                  <Text style={[styles.uploadSubtext, { color: colors.textSecondary }]}>
-                    Tap to change
-                  </Text>
-                </>
-              ) : (
-                <>
-                  <Upload size={24} color={colors.primary} />
-                  <Text style={[styles.uploadText, { color: colors.text }]}>
-                    Upload Resume
-                  </Text>
-                  <Text style={[styles.uploadSubtext, { color: colors.textSecondary }]}>
-                    PDF, DOC, DOCX (Max 5MB)
-                  </Text>
-                </>
-              )}
-            </View>
-          </TouchableOpacity>
-        </Animated.View>
-
-        <Animated.View 
-          entering={FadeInDown.delay(300).duration(500)}
-          style={styles.section}
-        >
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Customize AI Model
-          </Text>
-          
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.text }]}>Difficulty Level</Text>
-            <View style={[styles.pickerContainer, { backgroundColor: colors.card }]}>
-              <Picker
-                selectedValue={selectedDifficulty}
-                onValueChange={(value) => setSelectedDifficulty(value)}
-                style={[styles.picker, { color: colors.text }]}
-              >
-                <Picker.Item label="Select difficulty level" value="" />
-                {difficultyLevels.map((level) => (
-                  <Picker.Item key={level} label={level} value={level} />
-                ))}
-              </Picker>
-              <ChevronDown size={20} color={colors.textSecondary} style={styles.pickerIcon} />
-            </View>
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.text }]}>Experience Range</Text>
-            <View style={[styles.pickerContainer, { backgroundColor: colors.card }]}>
-              <Picker
-                selectedValue={selectedExperience}
-                onValueChange={(value) => setSelectedExperience(value)}
-                style={[styles.picker, { color: colors.text }]}
-              >
-                <Picker.Item label="Select experience range" value="" />
-                {experienceRanges.map((range) => (
-                  <Picker.Item key={range} label={range} value={range} />
-                ))}
-              </Picker>
-              <ChevronDown size={20} color={colors.textSecondary} style={styles.pickerIcon} />
-            </View>
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.text }]}>Company Name</Text>
-            <TextInput
-              style={[styles.input, { 
-                backgroundColor: colors.card,
-                color: colors.text,
-                borderColor: colors.border
-              }]}
-              placeholder="Enter company name"
-              placeholderTextColor={colors.textSecondary}
-              value={company}
-              onChangeText={setCompany}
-            />
-          </View>
-        </Animated.View>
-
+      {/* Controls */}
+      <View style={styles.controlsContainer}>
         <TouchableOpacity 
-          style={[
-            styles.startButton, 
-            { 
-              backgroundColor: colors.primary,
-              opacity: (!selectedDifficulty || !selectedExperience || !company || !resumeAttached) ? 0.5 : 1
-            }
-          ]}
-          disabled={!selectedDifficulty || !selectedExperience || !company || !resumeAttached}
-          onPress={() => {}}
+          style={[styles.micButton, { 
+            backgroundColor: isRecording ? '#FF4444' : colors.primary,
+          }]}
+          onPress={() => setIsRecording(!isRecording)}
         >
-          <Text style={styles.startButtonText}>Start Interview</Text>
+          {isRecording ? <MicOff size={20} color="#FFFFFF" /> : <Mic size={20} color="#FFFFFF" />}
         </TouchableOpacity>
-      </ScrollView>
+      </View>
     </View>
   );
 }
@@ -226,157 +113,141 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  headerGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.1)',
   },
   backButton: {
-    marginRight: 16,
     padding: 8,
+    marginRight: 8,
     borderRadius: 12,
-    backgroundColor: 'rgba(0,0,0,0.05)',
   },
   title: {
     fontFamily: 'Inter-Bold',
     fontSize: 24,
+    color: '#FFFFFF',
   },
-  content: {
-    padding: 16,
+  videoSection: {
+    height: height * 0.65,
+    backgroundColor: '#000',
   },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontFamily: 'Inter-Bold',
-    fontSize: 20,
-    marginBottom: 16,
-  },
-  uploadCard: {
-    borderRadius: 24,
-    padding: 28,
-    alignItems: 'center',
-    borderWidth: 2,
-    borderStyle: 'dashed',
-    borderColor: '#E0DBFF',
-    backgroundColor: 'rgba(144, 94, 255, 0.05)',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  uploadContent: {
-    alignItems: 'center',
-  },
-  uploadText: {
-    fontFamily: 'Inter-Medium',
-    fontSize: 18,
-    marginTop: 16,
-    marginBottom: 6,
-  },
-  uploadSubtext: {
-    fontFamily: 'Inter-Regular',
-    fontSize: 14,
-    opacity: 0.8,
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  label: {
-    fontFamily: 'Inter-Medium',
-    fontSize: 15,
-    marginBottom: 10,
-  },
-  pickerContainer: {
-    borderRadius: 16,
-    overflow: 'hidden',
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  picker: {
+  videoContainer: {
     flex: 1,
-    height: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  pickerIcon: {
-    position: 'absolute',
-    right: 16,
+  videoPlaceholder: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#1a1a1a',
   },
-  input: {
-    height: 56,
-    borderRadius: 16,
-    paddingHorizontal: 16,
+  videoPlaceholderText: {
     fontFamily: 'Inter-Regular',
-    fontSize: 16,
-    borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  techCard: {
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  techHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  difficultyDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: '#9E9E9E',
-  },
-  techName: {
-    fontFamily: 'Inter-Bold',
-    fontSize: 20,
-  },
-  startButton: {
-    borderRadius: 16,
-    padding: 18,
-    alignItems: 'center',
-    marginTop: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 8,
-  },
-  startButtonText: {
-    fontFamily: 'Inter-Bold',
     fontSize: 16,
     color: '#FFFFFF',
+  },
+  videoControls: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 16,
+  },
+  videoControlsBottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 12,
+    borderRadius: 12,
+  },
+  liveIndicatorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 68, 68, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  liveIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 6,
+  },
+  liveIndicatorText: {
+    color: '#FFFFFF',
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 12,
+  },
+  videoButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
+  },
+  interviewerMessageContainer: {
+    margin: 16,
+    marginTop: height * 0.05,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  messageGradient: {
+    padding: 16,
+  },
+  messageContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  messageIcon: {
+    marginRight: 12,
+    marginTop: 2,
+  },
+  interviewerMessage: {
+    flex: 1,
+    fontFamily: 'Inter-Medium',
+    fontSize: 16,
+    lineHeight: 24,
+    letterSpacing: 0.3,
+  },
+  controlsContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 16,
+    paddingBottom: Platform.OS === 'ios' ? 32 : 16,
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+  },
+  micButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 }); 

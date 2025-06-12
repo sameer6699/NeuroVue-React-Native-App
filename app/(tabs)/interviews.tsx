@@ -4,10 +4,12 @@ import { BookOpen, Mic, Video, Code, Lightbulb as LightbulbIcon, MessagesSquare,
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTheme } from '@/hooks/useTheme';
 import { InterviewTypeCard } from '@/components/interviews/InterviewTypeCard';
+import { useRouter } from 'expo-router';
 
 export default function InterviewsScreen() {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
+  const router = useRouter();
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -37,7 +39,7 @@ export default function InterviewsScreen() {
               description="Coding, system design & architecture"
               icon={<Code size={24} color="#FFFFFF" />}
               backgroundColor="#915EFF"
-              onPress={() => {}}
+              onPress={() => router.push('/technical-interview')}
             />
             
             <InterviewTypeCard 
