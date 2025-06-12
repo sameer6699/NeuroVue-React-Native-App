@@ -51,7 +51,7 @@ export default function InterviewSelectionScreen() {
 
           <TouchableOpacity 
             style={[styles.card, { backgroundColor: colors.card }]}
-            onPress={() => {}}
+            onPress={() => router.push('/hr-interview')}
           >
             <View style={[styles.iconContainer, { backgroundColor: '#FFE4D9' }]}>
               <Users size={24} color="#FE7A36" />
@@ -68,17 +68,17 @@ export default function InterviewSelectionScreen() {
 
           <TouchableOpacity 
             style={[styles.card, { backgroundColor: colors.card }]}
-            onPress={() => {}}
+            onPress={() => router.push('/behavioral-interview')}
           >
             <View style={[styles.iconContainer, { backgroundColor: '#DCFCE7' }]}>
               <MessageSquare size={24} color="#22C55E" />
             </View>
             <View style={styles.cardContent}>
               <Text style={[styles.cardTitle, { color: colors.text }]}>
-                General Interview
+                Behavioral Interview
               </Text>
               <Text style={[styles.cardDescription, { color: colors.textSecondary }]}>
-                Practice common interview questions and improve communication skills
+                Practice behavioral questions and improve your communication skills
               </Text>
             </View>
           </TouchableOpacity>

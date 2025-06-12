@@ -10,7 +10,7 @@ import { BlurView } from 'expo-blur';
 
 const { width, height } = Dimensions.get('window');
 
-export default function AITechnicalInterviewScreen() {
+export default function AIHRInterviewScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colors } = useTheme();
@@ -45,7 +45,7 @@ export default function AITechnicalInterviewScreen() {
             <ArrowLeft size={24} color="#FFFFFF" />
           </TouchableOpacity>
           <Text style={styles.title}>
-            Technical Interview
+            HR Interview
           </Text>
         </View>
       </LinearGradient>
@@ -80,7 +80,7 @@ export default function AITechnicalInterviewScreen() {
       </View>
 
       {/* Interviewer Message */}
-      <BlurView intensity={20} style={styles.interviewerMessageContainer}>
+      <BlurView intensity={80} style={styles.interviewerMessageContainer}>
         <LinearGradient
           colors={['rgba(145, 94, 255, 0.15)', 'rgba(145, 94, 255, 0.05)']}
           style={styles.messageGradient}
@@ -88,7 +88,7 @@ export default function AITechnicalInterviewScreen() {
           <View style={styles.messageContent}>
             <MessageCircle size={24} color={colors.primary} style={styles.messageIcon} />
             <Text style={[styles.interviewerMessage, { color: colors.text }]}>
-              Hello! I'm your AI Technical interviewer. Let's start with a coding question: Can you explain the concept of time complexity and space complexity in algorithms?
+              Hello! I'm your AI HR interviewer. Let's start with a common question: Tell me about yourself and your professional background.
             </Text>
           </View>
         </LinearGradient>
