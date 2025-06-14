@@ -186,7 +186,7 @@ export default function BehavioralInterviewScreen() {
           <TouchableOpacity 
             style={[styles.startButton, { backgroundColor: colors.primary }]}
             onPress={() => {
-              // TODO: Implement interview start logic
+              router.push('/behavioral-interview-session');
             }}
           >
             <Text style={styles.startButtonText}>Start Interview</Text>

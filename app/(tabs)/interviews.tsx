@@ -47,7 +47,7 @@ export default function InterviewsScreen() {
               description="Leadership, teamwork & problem solving"
               icon={<LightbulbIcon size={24} color="#FFFFFF" />}
               backgroundColor="#FE7A36"
-              onPress={() => {}}
+              onPress={() => router.push('/behavioral-interview')}
             />
             
             <InterviewTypeCard 
@@ -59,11 +59,11 @@ export default function InterviewsScreen() {
             />
             
             <InterviewTypeCard 
-              title="Mock Interview"
-              description="Full interview simulation with feedback"
-              icon={<Video size={24} color="#FFFFFF" />}
+              title="HR Interview"
+              description="Company culture, salary & career growth"
+              icon={<MessagesSquare size={24} color="#FFFFFF" />}
               backgroundColor="#22C55E"
-              onPress={() => {}}
+              onPress={() => router.push('/hr-interview')}
             />
           </View>
         </Animated.View>
