@@ -19,6 +19,10 @@ export default function HomeScreen() {
     router.push('/technical-interview');
   };
 
+  const handleBehavioralCardPress = () => {
+    router.push('/behavioral-interview');
+  };
+
   const handleNewInterviewPress = () => {
     router.push('/interview-selection');
   };
@@ -69,8 +73,13 @@ export default function HomeScreen() {
             <Text style={[styles.sectionTitle, { color: colors.text }]}>
               Start New Interview
             </Text>
-            <TouchableOpacity onPress={handleNewInterviewPress}>
-              <Plus size={20} color={colors.primary} />
+            <TouchableOpacity 
+              onPress={handleNewInterviewPress}
+              style={[styles.newButton, { backgroundColor: colors.primary }]}
+            >
+              <Text style={[styles.newButtonText, { color: '#FFFFFF' }]}>
+                New
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -91,7 +100,7 @@ export default function HomeScreen() {
               description="Leadership, Teamwork, Problem Solving"
               icon={<Mic size={24} color="#FFFFFF" />}
               colors={['#FE7A36', '#E14D2A']}
-              onPress={() => {}}
+              onPress={handleBehavioralCardPress}
             />
             <InterviewCard 
               title="Mock Video"
@@ -382,6 +391,15 @@ const styles = StyleSheet.create({
   },
   scoreText: {
     fontFamily: 'Inter-Bold',
+    fontSize: 14,
+  },
+  newButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  newButtonText: {
+    fontFamily: 'Inter-Medium',
     fontSize: 14,
   },
 });
