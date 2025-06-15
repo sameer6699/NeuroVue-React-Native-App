@@ -1,17 +1,29 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IUser extends Document {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
+  mobile: string;
+  jobRole: string;
+  experienceLevel: string;
+  interviewFocus: string[];
+  profileImage?: string;
+  _id: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 const UserSchema: Schema = new Schema(
   {
-    name: {
+    firstName: {
       type: String,
-      required: [true, 'Please provide a name'],
+      required: [true, 'First name is required'],
+      trim: true,
+    },
+    lastName: {
+      type: String,
+      required: [true, 'Last name is required'],
       trim: true,
     },
     email: {
@@ -20,6 +32,29 @@ const UserSchema: Schema = new Schema(
       unique: true,
       trim: true,
       lowercase: true,
+    },
+    mobile: {
+      type: String,
+      required: [true, 'Mobile number is required'],
+      trim: true,
+    },
+    jobRole: {
+      type: String,
+      default: 'Not Specified',
+      trim: true,
+    },
+    experienceLevel: {
+      type: String,
+      default: 'Fresher',
+      trim: true,
+    },
+    interviewFocus: {
+      type: [String],
+      default: ['General'],
+    },
+    profileImage: {
+      type: String,
+      default: null,
     },
   },
   {

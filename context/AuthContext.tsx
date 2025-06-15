@@ -10,6 +10,7 @@ type User = {
   jobRole: string;
   experienceLevel: string;
   interviewFocus: string[];
+  profileImage?: string;
 };
 
 type AuthContextType = {
