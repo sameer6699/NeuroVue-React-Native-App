@@ -131,7 +131,6 @@ The NeuroVue application uses MongoDB with the following document structure:
 
 ### Core Collections
 
-#### Users Collection
 ```mermaid
 classDiagram
     class User {
@@ -146,11 +145,11 @@ classDiagram
         String[] interviewFocusArea
         Date createdAt
         Date updatedAt
-        Profile profile
-        Analytics analytics
     }
 
     class Profile {
+        ObjectId _id
+        ObjectId userId
         String avatarUrl
         String bio
         String resumeUrl
@@ -159,6 +158,8 @@ classDiagram
     }
 
     class Analytics {
+        ObjectId _id
+        ObjectId userId
         Number totalSessions
         Number averageScore
         Object sessionsByType
@@ -168,13 +169,6 @@ classDiagram
         Date lastActive
     }
 
-    User "1" -- "1" Profile
-    User "1" -- "1" Analytics
-```
-
-#### Interview Sessions Collection
-```mermaid
-classDiagram
     class InterviewSession {
         ObjectId _id
         ObjectId userId
@@ -186,156 +180,59 @@ classDiagram
         String feedbackSummary
         Date createdAt
         Date updatedAt
-        Question[] questions
-        Analytics analytics
     }
 
     class Question {
         ObjectId _id
+        ObjectId sessionId
         String questionText
         String questionType
         String askedBy
         Date timestamp
-        Response[] responses
     }
 
     class Response {
         ObjectId _id
+        ObjectId questionId
         String responseText
         String responseBy
         Number evaluationScore
         Date timestamp
     }
 
-    class Analytics {
-        Number totalQuestions
-        Number averageResponseTime
-        String strengths
-        String weaknesses
-        String improvementSuggestions
-        String behaviorAnalysis
-    }
-
-    InterviewSession "1" -- "*" Question
-    Question "1" -- "*" Response
-    InterviewSession "1" -- "1" Analytics
-```
-
-#### Resumes Collection
-```mermaid
-classDiagram
     class Resume {
         ObjectId _id
         ObjectId userId
         String fileUrl
         Date uploadTime
-        Evaluation evaluation
     }
 
     class Evaluation {
+        ObjectId _id
+        ObjectId resumeId
         String summary
         String strengths
         String weaknesses
         Date evaluationTime
     }
 
-    Resume "1" -- "1" Evaluation
-```
-
-#### AI Interactions Collection
-```mermaid
-classDiagram
     class AIInteraction {
         ObjectId _id
         ObjectId userId
-        String promptText
-        String aiResponse
-        Date createdAt
+        String interactionType
+        String prompt
+        String response
+        Date timestamp
     }
-```
 
-### Document Structure Examples
-
-#### User Document
-```json
-{
-  "_id": ObjectId(),
-  "fullName": "John Doe",
-  "email": "john@example.com",
-  "phoneNumber": "+1234567890",
-  "passwordHash": "hashed_password",
-  "authProvider": "google",
-  "jobRole": "Software Engineer",
-  "experienceLevel": "mid",
-  "interviewFocusArea": ["technical", "system_design"],
-  "createdAt": ISODate(),
-  "updatedAt": ISODate(),
-  "profile": {
-    "avatarUrl": "https://...",
-    "bio": "Experienced developer...",
-    "resumeUrl": "https://...",
-    "preferredLanguage": "en",
-    "notificationSettings": {
-      "email": true,
-      "push": true
-    }
-  },
-  "analytics": {
-    "totalSessions": 10,
-    "averageScore": 85.5,
-    "sessionsByType": {
-      "technical": 5,
-      "behavioral": 3,
-      "system_design": 2
-    },
-    "behavioralInsights": "...",
-    "systemDesignProgress": "...",
-    "hrConfidenceScore": 80,
-    "lastActive": ISODate()
-  }
-}
-```
-
-#### Interview Session Document
-```json
-{
-  "_id": ObjectId(),
-  "userId": ObjectId(),
-  "sessionType": "technical",
-  "mode": "mock",
-  "startTime": ISODate(),
-  "endTime": ISODate(),
-  "overallScore": 88.5,
-  "feedbackSummary": "Strong technical knowledge...",
-  "createdAt": ISODate(),
-  "updatedAt": ISODate(),
-  "questions": [
-    {
-      "_id": ObjectId(),
-      "questionText": "Explain REST API...",
-      "questionType": "technical",
-      "askedBy": "AI",
-      "timestamp": ISODate(),
-      "responses": [
-        {
-          "_id": ObjectId(),
-          "responseText": "REST API is...",
-          "responseBy": "user",
-          "evaluationScore": 90,
-          "timestamp": ISODate()
-        }
-      ]
-    }
-  ],
-  "analytics": {
-    "totalQuestions": 10,
-    "averageResponseTime": 45.5,
-    "strengths": "Good problem-solving...",
-    "weaknesses": "Could improve on...",
-    "improvementSuggestions": "Practice more...",
-    "behaviorAnalysis": "Shows good communication..."
-  }
-}
+    User "1" -- "1" Profile : has
+    User "1" -- "1" Analytics : has
+    User "1" -- "*" InterviewSession : conducts
+    User "1" -- "*" Resume : uploads
+    User "1" -- "*" AIInteraction : makes
+    InterviewSession "1" -- "*" Question : contains
+    Question "1" -- "*" Response : has
+    Resume "1" -- "1" Evaluation : receives
 ```
 
 ### Key Features
