@@ -258,3 +258,179 @@ classDiagram
   - Session modes (live, mock)
   - Question types (technical, behavioural, system_design, hr)
   - Response sources (user, AI)
+
+## Detailed ER Diagram
+
+```mermaid
+erDiagram
+    USER ||--o{ INTERVIEW_SESSION : conducts
+    USER ||--o{ RESUME : uploads
+    USER ||--o{ AI_INTERACTION : makes
+    USER ||--|| PROFILE : has
+    USER ||--|| ANALYTICS : has
+    INTERVIEW_SESSION ||--o{ QUESTION : contains
+    QUESTION ||--o{ RESPONSE : has
+    RESUME ||--|| EVALUATION : receives
+
+    USER {
+        ObjectId _id PK
+        String fullName
+        String email UK
+        String phoneNumber
+        String passwordHash
+        String authProvider
+        String jobRole
+        String experienceLevel
+        String[] interviewFocusArea
+        Date createdAt
+        Date updatedAt
+    }
+
+    PROFILE {
+        ObjectId _id PK
+        ObjectId userId FK
+        String avatarUrl
+        String bio
+        String resumeUrl
+        String preferredLanguage
+        Object notificationSettings
+    }
+
+    ANALYTICS {
+        ObjectId _id PK
+        ObjectId userId FK
+        Number totalSessions
+        Number averageScore
+        Object sessionsByType
+        String behavioralInsights
+        String systemDesignProgress
+        Number hrConfidenceScore
+        Date lastActive
+    }
+
+    INTERVIEW_SESSION {
+        ObjectId _id PK
+        ObjectId userId FK
+        String sessionType
+        String mode
+        Date startTime
+        Date endTime
+        Number overallScore
+        String feedbackSummary
+        Date createdAt
+        Date updatedAt
+    }
+
+    QUESTION {
+        ObjectId _id PK
+        ObjectId sessionId FK
+        String questionText
+        String questionType
+        String askedBy
+        Date timestamp
+    }
+
+    RESPONSE {
+        ObjectId _id PK
+        ObjectId questionId FK
+        String responseText
+        String responseBy
+        Number evaluationScore
+        Date timestamp
+    }
+
+    RESUME {
+        ObjectId _id PK
+        ObjectId userId FK
+        String fileUrl
+        Date uploadTime
+    }
+
+    EVALUATION {
+        ObjectId _id PK
+        ObjectId resumeId FK
+        String summary
+        String strengths
+        String weaknesses
+        Date evaluationTime
+    }
+
+    AI_INTERACTION {
+        ObjectId _id PK
+        ObjectId userId FK
+        String interactionType
+        String prompt
+        String response
+        Date timestamp
+    }
+```
+
+### Entity Relationships Explanation
+
+1. **User Management**
+   - Each User has exactly one Profile (1:1)
+   - Each User has exactly one Analytics record (1:1)
+   - A User can conduct multiple Interview Sessions (1:N)
+   - A User can upload multiple Resumes (1:N)
+   - A User can have multiple AI Interactions (1:N)
+
+2. **Interview Flow**
+   - Each Interview Session contains multiple Questions (1:N)
+   - Each Question can have multiple Responses (1:N)
+   - Questions are linked to their parent Interview Session
+   - Responses are linked to their parent Question
+
+3. **Resume Management**
+   - Each Resume belongs to one User
+   - Each Resume has exactly one Evaluation (1:1)
+   - Evaluations are directly linked to their respective Resumes
+
+4. **Analytics and Tracking**
+   - User Analytics tracks overall performance metrics
+   - AI Interactions log all AI-related activities
+   - Timestamps are maintained for all major operations
+
+### Key Constraints
+
+1. **Primary Keys**
+   - All entities use ObjectId as their primary key
+   - Composite keys are not used for simplicity
+
+2. **Foreign Keys**
+   - All relationships are maintained through ObjectId references
+   - Cascading deletes are implemented where appropriate
+
+3. **Unique Constraints**
+   - User email must be unique
+   - Profile and Analytics are unique per User
+   - Evaluation is unique per Resume
+
+4. **Indexing Strategy**
+   - Primary keys are automatically indexed
+   - Foreign keys are indexed for faster joins
+   - Frequently queried fields have additional indexes
+   - Compound indexes for common query patterns
+
+### Data Integrity Rules
+
+1. **User Data**
+   - Email must be unique and valid
+   - Password must be hashed before storage
+   - Profile must be created with User creation
+
+2. **Interview Data**
+   - Session must have valid start and end times
+   - Questions must be associated with a valid session
+   - Responses must be linked to valid questions
+
+3. **Resume Data**
+   - File URL must be valid and accessible
+   - Evaluation must be completed after upload
+   - Only one active resume per user
+
+4. **Analytics Data**
+   - Scores must be within valid ranges
+   - Timestamps must be in chronological order
+   - Metrics must be updated in real-time
+
+This ER diagram and documentation provides a comprehensive view of the database structure and relationships in the NeuroVue application. It serves as a reference for developers and helps maintain data integrity throughout the application's lifecycle.
