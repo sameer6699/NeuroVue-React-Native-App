@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ProfileAvatar } from '@/components/ui/ProfileAvatar';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
+import { getApiUrl, ENV } from '@/config/env';
 
 const THEME_PREFERENCE_KEY = '@theme_preference';
 const PROFILE_IMAGE_KEY = '@profile_image';
@@ -101,7 +102,7 @@ export default function ProfileScreen() {
           const imageData = `data:image/jpeg;base64,${base64}`;
           console.log('Image converted to base64');
 
-          const API_URL = 'http://192.168.31.244:5000/api/users/update-profile';
+          const API_URL = getApiUrl(ENV.API_ENDPOINTS.UPDATE_PROFILE);
           console.log('Sending request to:', API_URL);
 
           // Update user profile in database

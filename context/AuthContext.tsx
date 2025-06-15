@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { useRouter } from 'expo-router';
+import { getApiUrl, ENV } from '../config/env';
 
 type User = {
   id: string;
@@ -43,7 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const API_URL = 'http://192.168.31.244:5000/api/auth/signin';
+      const API_URL = getApiUrl(ENV.API_ENDPOINTS.SIGNIN);
       const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
@@ -86,7 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (name: string, email: string, password: string) => {
     setIsLoading(true);
     try {
-      const API_URL = 'http://192.168.31.244:5000/api/auth/signup';
+      const API_URL = getApiUrl(ENV.API_ENDPOINTS.SIGNUP);
       const [firstName, ...lastNameParts] = name.trim().split(' ');
       const lastName = lastNameParts.join(' ');
 
