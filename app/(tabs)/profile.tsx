@@ -1,42 +1,171 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Modal, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Settings, Moon, CircleHelp as HelpCircle, LogOut, ChevronRight, Bell, Shield, CreditCard as Edit, Info } from 'lucide-react-native';
+import { Settings, Moon, CircleHelp as HelpCircle, LogOut, ChevronRight, Bell, Shield, CreditCard as Edit, Info, Phone, Briefcase, Award, Target, Upload, Camera } from 'lucide-react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/hooks/useAuth';
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { OptimizedImage } from '@/components/ui/OptimizedImage';
+import { ProfileAvatar } from '@/components/ui/ProfileAvatar';
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 
 const THEME_PREFERENCE_KEY = '@theme_preference';
+const PROFILE_IMAGE_KEY = '@profile_image';
+
+// Job role mapping object
+const JOB_ROLE_MAPPING: { [key: string]: string } = {
+  'software_engineer': 'Software Engineer',
+  'frontend_developer': 'Frontend Developer',
+  'backend_developer': 'Backend Developer',
+  'full_stack_developer': 'Full Stack Developer',
+  'devops_engineer': 'DevOps Engineer',
+  'mobile_developer': 'Mobile Developer',
+  'data_engineer': 'Data Engineer',
+  'data_scientist': 'Data Scientist',
+  'ml_engineer': 'Machine Learning Engineer',
+  'qa_engineer': 'QA Engineer',
+  'security_engineer': 'Security Engineer',
+  'cloud_engineer': 'Cloud Engineer',
+  'product_manager': 'Product Manager',
+  'project_manager': 'Project Manager',
+  'technical_lead': 'Technical Lead',
+  'engineering_manager': 'Engineering Manager',
+  'solutions_architect': 'Solutions Architect'
+};
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { colors, isDark, toggleTheme, setTheme } = useTheme();
-  const { user, signOut } = useAuth();
+  const { user, signOut, updateUser } = useAuth();
   const [privacyModalVisible, setPrivacyModalVisible] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
-  // Load saved theme preference
+  // Load saved theme preference and profile image
   useEffect(() => {
-    const loadThemePreference = async () => {
+    const loadSavedData = async () => {
       try {
+        // Load theme preference
         const savedTheme = await AsyncStorage.getItem(THEME_PREFERENCE_KEY);
         if (savedTheme !== null) {
           setTheme(savedTheme as 'light' | 'dark');
         } else {
-          // If no saved preference, default to light theme
           setTheme('light');
           await AsyncStorage.setItem(THEME_PREFERENCE_KEY, 'light');
         }
+
+        // Load profile image from user data
+        if (user?.profileImage) {
+          setProfileImage(user.profileImage);
+        }
       } catch (error) {
-        console.error('Error loading theme preference:', error);
-        // Default to light theme on error
+        console.error('Error loading saved data:', error);
         setTheme('light');
       }
     };
 
-    loadThemePreference();
-  }, []);
+    loadSavedData();
+  }, [user]);
+
+  const handleImageUpload = async () => {
+    try {
+      // Request permission
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission needed', 'Please grant permission to access your photos');
+        return;
+      }
+
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0].uri) {
+        setIsUploading(true);
+        
+        try {
+          console.log('Starting image upload process...');
+          console.log('User ID:', user?.id);
+          
+          // Convert image to base64
+          const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
+
+          // Prepare the image data
+          const imageData = `data:image/jpeg;base64,${base64}`;
+          console.log('Image converted to base64');
+
+          const API_URL = 'http://192.168.31.244:5000/api/users/update-profile';
+          console.log('Sending request to:', API_URL);
+
+          // Update user profile in database
+          const response = await fetch(API_URL, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: user?.id,
+              profileImage: imageData
+            }),
+          });
+
+          console.log('Response status:', response.status);
+          const responseText = await response.text();
+          console.log('Response text:', responseText);
+
+          if (!response.ok) {
+            throw new Error(`Failed to update profile image: ${responseText}`);
+          }
+
+          const data = JSON.parse(responseText);
+          console.log('Response data:', data);
+          
+          if (data.success) {
+            // Update local state
+            setProfileImage(imageData);
+            // Update auth context with all required user properties
+            if (user) {
+              updateUser({
+                id: user.id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                mobile: user.mobile,
+                jobRole: user.jobRole,
+                experienceLevel: user.experienceLevel,
+                interviewFocus: user.interviewFocus,
+                profileImage: imageData
+              });
+            }
+            Alert.alert('Success', 'Profile picture updated successfully');
+          } else {
+            throw new Error(data.message || 'Failed to update profile image');
+          }
+        } catch (error: any) {
+          console.error('Detailed error:', error);
+          Alert.alert('Error', `Failed to upload image: ${error.message}`);
+        } finally {
+          setIsUploading(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error in image picker:', error);
+      Alert.alert('Error', 'Failed to select image. Please try again.');
+    }
+  };
+
+  // Function to get display job role
+  const getDisplayJobRole = (role: string) => {
+    return JOB_ROLE_MAPPING[role] || role;
+  };
 
   const PrivacyPolicyModal = () => (
     <Modal
@@ -86,12 +215,27 @@ export default function ProfileScreen() {
         >
           <View style={[styles.profileCard, { backgroundColor: colors.card }]}>
             <View style={styles.profileContent}>
-              <OptimizedImage 
-                source={{ uri: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg' }} 
-                style={styles.profileImage}
-                contentFit="cover"
-                cachePolicy="memory-disk"
-              />
+              <View style={styles.profileImageContainer}>
+                <ProfileAvatar 
+                  imageUri={profileImage}
+                  firstName={user?.firstName}
+                  lastName={user?.lastName}
+                  size={80}
+                />
+                <TouchableOpacity 
+                  style={[
+                    styles.uploadButton, 
+                    { 
+                      backgroundColor: colors.primary,
+                      opacity: isUploading ? 0.7 : 1 
+                    }
+                  ]}
+                  onPress={handleImageUpload}
+                  disabled={isUploading}
+                >
+                  <Camera size={16} color="#FFFFFF" />
+                </TouchableOpacity>
+              </View>
               <View style={styles.profileInfo}>
                 <View style={styles.nameRow}>
                   <Text style={[styles.profileName, { color: colors.text }]}>
@@ -104,6 +248,73 @@ export default function ProfileScreen() {
                 <Text style={[styles.profileEmail, { color: colors.textSecondary }]}>
                   {user?.email || 'jane@example.com'}
                 </Text>
+              </View>
+            </View>
+
+            {/* Additional User Information */}
+            <View style={[styles.additionalInfoContainer, { borderTopColor: colors.border }]}>
+              <View style={styles.additionalInfoItem}>
+                <View style={styles.additionalInfoIconContainer}>
+                  <Phone size={16} color={colors.primary} />
+                </View>
+                <View style={styles.additionalInfoTextContainer}>
+                  <Text style={[styles.additionalInfoLabel, { color: colors.textSecondary }]}>Mobile Number</Text>
+                  <Text style={[styles.additionalInfoValue, { color: colors.text }]}>
+                    {user?.mobile || 'Not provided'}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.additionalInfoItem}>
+                <View style={styles.additionalInfoIconContainer}>
+                  <Briefcase size={16} color={colors.primary} />
+                </View>
+                <View style={styles.additionalInfoTextContainer}>
+                  <Text style={[styles.additionalInfoLabel, { color: colors.textSecondary }]}>Job Role</Text>
+                  <Text style={[styles.additionalInfoValue, { color: colors.text }]}>
+                    {user?.jobRole ? getDisplayJobRole(user.jobRole) : 'Not provided'}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.additionalInfoItem}>
+                <View style={styles.additionalInfoIconContainer}>
+                  <Award size={16} color={colors.primary} />
+                </View>
+                <View style={styles.additionalInfoTextContainer}>
+                  <Text style={[styles.additionalInfoLabel, { color: colors.textSecondary }]}>Experience Level</Text>
+                  <Text style={[styles.additionalInfoValue, { color: colors.text }]}>
+                    {user?.experienceLevel || 'Not provided'}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.additionalInfoItem}>
+                <View style={styles.additionalInfoIconContainer}>
+                  <Target size={16} color={colors.primary} />
+                </View>
+                <View style={styles.additionalInfoTextContainer}>
+                  <Text style={[styles.additionalInfoLabel, { color: colors.textSecondary }]}>Interview Focus</Text>
+                  <ScrollView 
+                    horizontal 
+                    showsHorizontalScrollIndicator={false} 
+                    style={styles.focusScrollContainer}
+                  >
+                    {user?.interviewFocus?.map((focus, index) => (
+                      <View 
+                        key={index} 
+                        style={[
+                          styles.focusButton,
+                          { backgroundColor: colors.card }
+                        ]}
+                      >
+                        <Text style={[styles.focusButtonText, { color: colors.text }]}>
+                          {focus}
+                        </Text>
+                      </View>
+                    ))}
+                  </ScrollView>
+                </View>
               </View>
             </View>
             
@@ -264,11 +475,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
-  profileImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+  profileImageContainer: {
+    position: 'relative',
     marginRight: 16,
+  },
+  profileImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
   },
   profileInfo: {
     flex: 1,
@@ -405,5 +619,61 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 8,
+  },
+  additionalInfoContainer: {
+    padding: 16,
+    borderTopWidth: 1,
+  },
+  additionalInfoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  additionalInfoIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(61, 90, 241, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  additionalInfoTextContainer: {
+    flex: 1,
+  },
+  additionalInfoLabel: {
+    fontSize: 12,
+    marginBottom: 2,
+  },
+  additionalInfoValue: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  focusScrollContainer: {
+    marginTop: 4,
+  },
+  focusButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(61, 90, 241, 0.2)',
+  },
+  focusButtonText: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  uploadButton: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
 });

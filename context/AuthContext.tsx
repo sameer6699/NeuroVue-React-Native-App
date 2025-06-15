@@ -10,6 +10,7 @@ type User = {
   jobRole: string;
   experienceLevel: string;
   interviewFocus: string[];
+  profileImage?: string;
 };
 
 type AuthContextType = {
@@ -19,6 +20,7 @@ type AuthContextType = {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (name: string, email: string, password: string) => Promise<void>;
   signOut: () => void;
+  updateUser: (userData: User) => void;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -28,6 +30,7 @@ const AuthContext = createContext<AuthContextType>({
   signIn: async () => {},
   signUp: async () => {},
   signOut: () => {},
+  updateUser: () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -57,7 +60,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (data.success) {
-        setUser(data.user);
+        setUser({
+          id: data.user._id,
+          firstName: data.user.firstName,
+          lastName: data.user.lastName,
+          email: data.user.email,
+          mobile: data.user.mobile,
+          jobRole: data.user.jobRole,
+          experienceLevel: data.user.experienceLevel,
+          interviewFocus: data.user.interviewFocus,
+          profileImage: data.user.profileImage
+        });
         router.replace('/(tabs)');
       } else {
         throw new Error(data.message || 'Sign in failed');
@@ -120,6 +133,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     router.replace('/sign-in');
   };
 
+  const updateUser = (userData: User) => {
+    setUser(userData);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -129,6 +146,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         signIn,
         signUp,
         signOut,
+        updateUser,
       }}
     >
       {children}
