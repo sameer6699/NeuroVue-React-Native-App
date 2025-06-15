@@ -42,7 +42,7 @@ export default function HomeScreen() {
         >
           <TouchableOpacity style={styles.profileButton}>
             <OptimizedImage 
-              source={{ uri: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg' }} 
+              source={{ uri: user?.profileImage || 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg' }} 
               style={styles.profileImage}
               contentFit="cover"
               cachePolicy="memory-disk"

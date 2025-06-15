@@ -37,7 +37,7 @@ const JOB_ROLE_MAPPING: { [key: string]: string } = {
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { colors, isDark, toggleTheme, setTheme } = useTheme();
-  const { user, signOut } = useAuth();
+  const { user, signOut, updateUser } = useAuth();
   const [privacyModalVisible, setPrivacyModalVisible] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -131,11 +131,25 @@ export default function ProfileScreen() {
           if (data.success) {
             // Update local state
             setProfileImage(imageData);
+            // Update auth context with all required user properties
+            if (user) {
+              updateUser({
+                id: user.id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                mobile: user.mobile,
+                jobRole: user.jobRole,
+                experienceLevel: user.experienceLevel,
+                interviewFocus: user.interviewFocus,
+                profileImage: imageData
+              });
+            }
             Alert.alert('Success', 'Profile picture updated successfully');
           } else {
             throw new Error(data.message || 'Failed to update profile image');
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('Detailed error:', error);
           Alert.alert('Error', `Failed to upload image: ${error.message}`);
         } finally {

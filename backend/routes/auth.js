@@ -38,14 +38,15 @@ router.post('/signin', async (req, res) => {
             success: true,
             message: 'Sign in successful',
             user: {
-                id: user._id,
+                _id: user._id,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
                 mobile: user.mobile,
                 jobRole: user.jobRole,
                 experienceLevel: user.experienceLevel,
-                interviewFocus: user.interviewFocus
+                interviewFocus: user.interviewFocus,
+                profileImage: user.profileImage
             }
         });
 
@@ -109,7 +110,8 @@ router.post('/signup', async (req, res) => {
             mobile: mobile.toString(),
             jobRole: jobRole || 'Not Specified',
             experienceLevel: experienceLevel || 'Fresher',
-            interviewFocus: interviewFocus || ['General']
+            interviewFocus: interviewFocus || ['General'],
+            profileImage: null // Initialize profile image as null
         });
 
         // Save user to database
@@ -125,7 +127,7 @@ router.post('/signup', async (req, res) => {
             success: true,
             message: `Welcome ${firstName}! Your account has been successfully created.`,
             user: {
-                id: savedUser._id,
+                _id: savedUser._id,
                 firstName: savedUser.firstName,
                 lastName: savedUser.lastName,
                 email: savedUser.email,
@@ -133,6 +135,7 @@ router.post('/signup', async (req, res) => {
                 jobRole: savedUser.jobRole,
                 experienceLevel: savedUser.experienceLevel,
                 interviewFocus: savedUser.interviewFocus,
+                profileImage: savedUser.profileImage,
                 createdAt: savedUser.createdAt
             },
             additionalInfo: {

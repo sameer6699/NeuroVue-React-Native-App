@@ -6,11 +6,6 @@ const User = require('../models/User');
 router.put('/update-profile', async (req, res) => {
     try {
         console.log('Received update profile request');
-        console.log('Request body:', {
-            ...req.body,
-            profileImage: req.body.profileImage ? 'Base64 image data present' : 'No image data'
-        });
-
         const { userId, profileImage } = req.body;
 
         if (!userId) {
@@ -18,6 +13,14 @@ router.put('/update-profile', async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: 'User ID is required'
+            });
+        }
+
+        if (!profileImage) {
+            console.log('Error: Profile image is missing');
+            return res.status(400).json({
+                success: false,
+                message: 'Profile image is required'
             });
         }
 
@@ -52,7 +55,7 @@ router.put('/update-profile', async (req, res) => {
                 jobRole: updatedUser.jobRole,
                 experienceLevel: updatedUser.experienceLevel,
                 interviewFocus: updatedUser.interviewFocus,
-                profileImage: updatedUser.profileImage ? 'Image data present' : 'No image'
+                profileImage: updatedUser.profileImage
             }
         });
     } catch (error) {
@@ -60,8 +63,7 @@ router.put('/update-profile', async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Error updating profile',
-            error: error.message,
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            error: error.message
         });
     }
 });
