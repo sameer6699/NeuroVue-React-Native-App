@@ -6,7 +6,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/hooks/useAuth';
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { OptimizedImage } from '@/components/ui/OptimizedImage';
+import { ProfileAvatar } from '@/components/ui/ProfileAvatar';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 
@@ -216,11 +216,11 @@ export default function ProfileScreen() {
           <View style={[styles.profileCard, { backgroundColor: colors.card }]}>
             <View style={styles.profileContent}>
               <View style={styles.profileImageContainer}>
-                <OptimizedImage 
-                  source={{ uri: profileImage || 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg' }} 
-                  style={styles.profileImage}
-                  contentFit="cover"
-                  cachePolicy="memory-disk"
+                <ProfileAvatar 
+                  imageUri={profileImage}
+                  firstName={user?.firstName}
+                  lastName={user?.lastName}
+                  size={80}
                 />
                 <TouchableOpacity 
                   style={[

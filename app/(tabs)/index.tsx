@@ -7,7 +7,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { InterviewCard } from '@/components/home/InterviewCard';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { useAuth } from '@/hooks/useAuth';
-import { OptimizedImage } from '@/components/ui/OptimizedImage';
+import { ProfileAvatar } from '@/components/ui/ProfileAvatar';
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
@@ -40,12 +40,15 @@ export default function HomeScreen() {
           entering={FadeInDown.delay(100).duration(500)}
           style={styles.header}
         >
-          <TouchableOpacity style={styles.profileButton}>
-            <OptimizedImage 
-              source={{ uri: user?.profileImage || 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg' }} 
-              style={styles.profileImage}
-              contentFit="cover"
-              cachePolicy="memory-disk"
+          <TouchableOpacity 
+            style={styles.profileButton}
+            onPress={() => router.push('/profile')}
+          >
+            <ProfileAvatar 
+              imageUri={user?.profileImage}
+              firstName={user?.firstName}
+              lastName={user?.lastName}
+              size={40}
             />
           </TouchableOpacity>
           <View style={styles.headerTextContainer}>
@@ -256,10 +259,6 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     overflow: 'hidden',
-  },
-  profileImage: {
-    width: '100%',
-    height: '100%',
   },
   searchContainer: {
     paddingHorizontal: 24,
