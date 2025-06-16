@@ -174,12 +174,53 @@ export default function InterviewsScreen() {
             </TouchableOpacity>
             
             <TouchableOpacity style={[styles.trackCard, { backgroundColor: colors.card }]}>
-              <View style={[styles.trackIconContainer, { backgroundColor: '#DCFCE7' }]}>
-                <BookOpen size={24} color="#22C55E" />
+              <View style={styles.logoContainer}>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/microsoft-logo.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/Adobe-logo.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/salesforce-logo.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/oracle.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/IBM-logo.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/SAP-logo.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
               </View>
               <Text style={[styles.trackTitle, { color: colors.text }]}>Product-Based</Text>
               <Text style={[styles.trackDescription, { color: colors.textSecondary }]}>
-                Microsoft, Adobe, Salesforce
+                Microsoft, Adobe, Salesforce, Oracle, IBM, SAP
               </Text>
               <View style={[styles.trackStats, { borderTopColor: colors.border }]}>
                 <Text style={[styles.trackStatText, { color: colors.textSecondary }]}>
@@ -189,12 +230,46 @@ export default function InterviewsScreen() {
             </TouchableOpacity>
             
             <TouchableOpacity style={[styles.trackCard, { backgroundColor: colors.card }]}>
-              <View style={[styles.trackIconContainer, { backgroundColor: '#D1E9FF' }]}>
-                <MessagesSquare size={24} color="#3D5AF1" />
+              <View style={styles.logoContainer}>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/TCS-logo.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/infosys-logo.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/wipro-logo.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/HCL-logo.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/Tech-Mahindra-logo.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
               </View>
               <Text style={[styles.trackTitle, { color: colors.text }]}>Service-Based</Text>
               <Text style={[styles.trackDescription, { color: colors.textSecondary }]}>
-                TCS, Infosys, Wipro, HCL
+                TCS, Infosys, Wipro, HCL, Tech Mahindra
               </Text>
               <View style={[styles.trackStats, { borderTopColor: colors.border }]}>
                 <Text style={[styles.trackStatText, { color: colors.textSecondary }]}>
@@ -204,12 +279,46 @@ export default function InterviewsScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity style={[styles.trackCard, { backgroundColor: colors.card }]}>
-              <View style={[styles.trackIconContainer, { backgroundColor: '#FFE4D9' }]}>
-                <LightbulbIcon size={24} color="#FE7A36" />
+              <View style={styles.logoContainer}>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/mckinsey-logo.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/BCG-logo.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/Deloitte-Logo.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/PWC-logo.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/KPMG-logo.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
               </View>
               <Text style={[styles.trackTitle, { color: colors.text }]}>Consultancy</Text>
               <Text style={[styles.trackDescription, { color: colors.textSecondary }]}>
-                McKinsey, BCG, Deloitte, PwC
+                McKinsey, BCG, Deloitte, PwC, KPMG
               </Text>
               <View style={[styles.trackStats, { borderTopColor: colors.border }]}>
                 <Text style={[styles.trackStatText, { color: colors.textSecondary }]}>
@@ -300,7 +409,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   trackCard: {
-    width: 200,
+    width: 320,
     borderRadius: 16,
     padding: 16,
     marginHorizontal: 8,
@@ -346,12 +455,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 12,
-    paddingHorizontal: 4,
+    paddingHorizontal: 8,
+    width: '100%',
   },
   logoCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
@@ -365,7 +475,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   companyLogo: {
-    width: 24,
-    height: 24,
+    width: 28,
+    height: 28,
   },
 });
