@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Dimensions, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { FileText, Upload, AlertCircle, CheckCircle2, XCircle, Search, Briefcase, Building2, FileText as FileTextIcon } from 'lucide-react-native';
+import { FileText, Upload, AlertCircle, CheckCircle2, XCircle, Search, Briefcase, Building2, FileText as FileTextIcon, Building } from 'lucide-react-native';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { useTheme } from '@/hooks/useTheme';
 import { useState } from 'react';
@@ -13,12 +13,58 @@ export default function ATSResumeScreen() {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const [jobTitle, setJobTitle] = useState('');
+  const [companyName, setCompanyName] = useState('');
   const [industry, setIndustry] = useState('');
   const [jobDescription, setJobDescription] = useState('');
   const [experienceLevel, setExperienceLevel] = useState('');
   const [resumeFile, setResumeFile] = useState<DocumentPicker.DocumentPickerAsset | null>(null);
+  const [errors, setErrors] = useState<{
+    resume?: string;
+    jobTitle?: string;
+    companyName?: string;
+    industry?: string;
+    jobDescription?: string;
+    experienceLevel?: string;
+  }>({});
 
   const experienceLevels = ['Student/Fresher', '1-3 Years', '3-6 Years', '6+ Years'];
+
+  const validateFields = () => {
+    const newErrors: typeof errors = {};
+    
+    if (!resumeFile) {
+      newErrors.resume = 'Please upload your resume';
+    }
+    if (!jobTitle.trim()) {
+      newErrors.jobTitle = 'Please enter your target job role';
+    }
+    if (!companyName.trim()) {
+      newErrors.companyName = 'Please enter the company name';
+    }
+    if (!industry.trim()) {
+      newErrors.industry = 'Please enter your industry/domain';
+    }
+    if (!experienceLevel) {
+      newErrors.experienceLevel = 'Please select your experience level';
+    }
+    // Job Description is now optional, so we don't validate it
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleAnalyze = () => {
+    if (validateFields()) {
+      // TODO: Implement resume analysis logic
+      console.log('Analyzing resume with:', {
+        jobTitle,
+        industry,
+        jobDescription,
+        experienceLevel,
+        resumeFile
+      });
+    }
+  };
 
   const handleResumeUpload = async () => {
     try {
@@ -33,7 +79,6 @@ export default function ATSResumeScreen() {
 
       const file = result.assets[0];
       
-      // Check file size (5MB limit)
       if (file.size && file.size > 5 * 1024 * 1024) {
         Alert.alert(
           'File Too Large',
@@ -44,6 +89,7 @@ export default function ATSResumeScreen() {
       }
 
       setResumeFile(file);
+      setErrors(prev => ({ ...prev, resume: undefined }));
     } catch (error) {
       Alert.alert(
         'Error',
@@ -62,20 +108,6 @@ export default function ATSResumeScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <Animated.View 
-          entering={FadeInDown.delay(100).duration(500)}
-          style={styles.header}
-        >
-          <LinearGradient
-            colors={[colors.primary + '20', colors.primary + '05']}
-            style={styles.headerGradient}
-          >
-            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-              Get your resume ATS-ready with our smart analysis
-            </Text>
-          </LinearGradient>
-        </Animated.View>
-
         <Animated.View 
           entering={FadeInDown.delay(200).duration(500)}
           style={styles.uploadContainer}
@@ -105,7 +137,10 @@ export default function ATSResumeScreen() {
             {resumeFile && (
               <TouchableOpacity 
                 style={[styles.removeButton, { backgroundColor: colors.error + '20' }]}
-                onPress={() => setResumeFile(null)}
+                onPress={() => {
+                  setResumeFile(null);
+                  setErrors(prev => ({ ...prev, resume: undefined }));
+                }}
               >
                 <Text style={[styles.removeButtonText, { color: colors.error }]}>
                   Remove
@@ -113,6 +148,11 @@ export default function ATSResumeScreen() {
               </TouchableOpacity>
             )}
           </TouchableOpacity>
+          {errors.resume && (
+            <Text style={[styles.errorText, { color: colors.error }]}>
+              {errors.resume}
+            </Text>
+          )}
         </Animated.View>
 
         <Animated.View 
@@ -128,13 +168,47 @@ export default function ATSResumeScreen() {
               style={[styles.input, { 
                 backgroundColor: colors.background,
                 color: colors.text,
-                borderColor: colors.border
+                borderColor: errors.jobTitle ? colors.error : colors.border
               }]}
               placeholder="What job title/role are you applying for?"
               placeholderTextColor={colors.textSecondary}
               value={jobTitle}
-              onChangeText={setJobTitle}
+              onChangeText={(text) => {
+                setJobTitle(text);
+                setErrors(prev => ({ ...prev, jobTitle: undefined }));
+              }}
             />
+            {errors.jobTitle && (
+              <Text style={[styles.errorText, { color: colors.error }]}>
+                {errors.jobTitle}
+              </Text>
+            )}
+          </View>
+
+          <View style={[styles.questionCard, { backgroundColor: colors.card }]}>
+            <View style={styles.questionHeader}>
+              <Building size={20} color={colors.primary} />
+              <Text style={[styles.questionTitle, { color: colors.text }]}>Company Name (Required)</Text>
+            </View>
+            <TextInput
+              style={[styles.input, { 
+                backgroundColor: colors.background,
+                color: colors.text,
+                borderColor: errors.companyName ? colors.error : colors.border
+              }]}
+              placeholder="Enter the company name you're applying to"
+              placeholderTextColor={colors.textSecondary}
+              value={companyName}
+              onChangeText={(text) => {
+                setCompanyName(text);
+                setErrors(prev => ({ ...prev, companyName: undefined }));
+              }}
+            />
+            {errors.companyName && (
+              <Text style={[styles.errorText, { color: colors.error }]}>
+                {errors.companyName}
+              </Text>
+            )}
           </View>
 
           <View style={[styles.questionCard, { backgroundColor: colors.card }]}>
@@ -146,13 +220,21 @@ export default function ATSResumeScreen() {
               style={[styles.input, { 
                 backgroundColor: colors.background,
                 color: colors.text,
-                borderColor: colors.border
+                borderColor: errors.industry ? colors.error : colors.border
               }]}
               placeholder="What is the industry/domain of interest?"
               placeholderTextColor={colors.textSecondary}
               value={industry}
-              onChangeText={setIndustry}
+              onChangeText={(text) => {
+                setIndustry(text);
+                setErrors(prev => ({ ...prev, industry: undefined }));
+              }}
             />
+            {errors.industry && (
+              <Text style={[styles.errorText, { color: colors.error }]}>
+                {errors.industry}
+              </Text>
+            )}
           </View>
 
           <View style={[styles.questionCard, { backgroundColor: colors.card }]}>
@@ -166,10 +248,13 @@ export default function ATSResumeScreen() {
                 color: colors.text,
                 borderColor: colors.border
               }]}
-              placeholder="Paste job description text here..."
+              placeholder="Paste job description text here (optional)..."
               placeholderTextColor={colors.textSecondary}
               value={jobDescription}
-              onChangeText={setJobDescription}
+              onChangeText={(text) => {
+                setJobDescription(text);
+                setErrors(prev => ({ ...prev, jobDescription: undefined }));
+              }}
               multiline
               numberOfLines={4}
             />
@@ -192,10 +277,13 @@ export default function ATSResumeScreen() {
                     styles.experienceButton,
                     { 
                       backgroundColor: experienceLevel === level ? colors.primary : colors.background,
-                      borderColor: colors.border
+                      borderColor: errors.experienceLevel ? colors.error : colors.border
                     }
                   ]}
-                  onPress={() => setExperienceLevel(level)}
+                  onPress={() => {
+                    setExperienceLevel(level);
+                    setErrors(prev => ({ ...prev, experienceLevel: undefined }));
+                  }}
                 >
                   <Text style={[
                     styles.experienceButtonText,
@@ -206,6 +294,11 @@ export default function ATSResumeScreen() {
                 </TouchableOpacity>
               ))}
             </ScrollView>
+            {errors.experienceLevel && (
+              <Text style={[styles.errorText, { color: colors.error }]}>
+                {errors.experienceLevel}
+              </Text>
+            )}
           </View>
         </Animated.View>
 
@@ -215,15 +308,7 @@ export default function ATSResumeScreen() {
         >
           <TouchableOpacity 
             style={[styles.analyzeButton]}
-            onPress={() => {
-              // TODO: Implement resume analysis logic
-              console.log('Analyzing resume with:', {
-                jobTitle,
-                industry,
-                jobDescription,
-                experienceLevel
-              });
-            }}
+            onPress={handleAnalyze}
           >
             <LinearGradient
               colors={[colors.primary, colors.primary + 'CC']}
@@ -244,23 +329,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 32,
-  },
-  header: {
-    paddingHorizontal: 24,
-    marginBottom: 32,
-  },
-  headerGradient: {
-    padding: 24,
-    borderRadius: 16,
-  },
-  title: {
-    fontFamily: 'Inter-Bold',
-    fontSize: 28,
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontFamily: 'Inter-Regular',
-    fontSize: 16,
   },
   uploadContainer: {
     paddingHorizontal: 24,
@@ -384,5 +452,11 @@ const styles = StyleSheet.create({
   removeButtonText: {
     fontFamily: 'Inter-Medium',
     fontSize: 14,
+  },
+  errorText: {
+    fontFamily: 'Inter-Regular',
+    fontSize: 12,
+    marginTop: 4,
+    marginLeft: 4,
   },
 }); 
