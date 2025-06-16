@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BookOpen, Mic, Video, Code, Lightbulb as LightbulbIcon, MessagesSquare, Filter, ChevronRight } from 'lucide-react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -117,7 +117,7 @@ export default function InterviewsScreen() {
           entering={FadeInDown.delay(400).duration(500)}
           style={styles.section}
         >
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Specialized Tracks</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Specialized Track</Text>
           
           <ScrollView 
             horizontal
@@ -125,16 +125,50 @@ export default function InterviewsScreen() {
             contentContainerStyle={styles.tracksContainer}
           >
             <TouchableOpacity style={[styles.trackCard, { backgroundColor: colors.card }]}>
-              <View style={[styles.trackIconContainer, { backgroundColor: '#E0DBFF' }]}>
-                <Code size={24} color="#915EFF" />
+              <View style={styles.logoContainer}>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/meta-logo.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/amazon-logo.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/apple-logo.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/Netflix.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View style={styles.logoCircle}>
+                  <Image 
+                    source={require('@/assets/images/logos/Specialized-Track/google-logo.png')}
+                    style={styles.companyLogo}
+                    resizeMode="contain"
+                  />
+                </View>
               </View>
-              <Text style={[styles.trackTitle, { color: colors.text }]}>Frontend Development</Text>
+              <Text style={[styles.trackTitle, { color: colors.text }]}>MAANG</Text>
               <Text style={[styles.trackDescription, { color: colors.textSecondary }]}>
-                React, Vue, Angular, CSS
+                Meta, Amazon, Apple, Netflix, Google
               </Text>
               <View style={[styles.trackStats, { borderTopColor: colors.border }]}>
                 <Text style={[styles.trackStatText, { color: colors.textSecondary }]}>
-                  16 questions
+                  25 questions
                 </Text>
               </View>
             </TouchableOpacity>
@@ -143,13 +177,13 @@ export default function InterviewsScreen() {
               <View style={[styles.trackIconContainer, { backgroundColor: '#DCFCE7' }]}>
                 <BookOpen size={24} color="#22C55E" />
               </View>
-              <Text style={[styles.trackTitle, { color: colors.text }]}>Data Science</Text>
+              <Text style={[styles.trackTitle, { color: colors.text }]}>Product-Based</Text>
               <Text style={[styles.trackDescription, { color: colors.textSecondary }]}>
-                Python, ML, Statistics
+                Microsoft, Adobe, Salesforce
               </Text>
               <View style={[styles.trackStats, { borderTopColor: colors.border }]}>
                 <Text style={[styles.trackStatText, { color: colors.textSecondary }]}>
-                  12 questions
+                  20 questions
                 </Text>
               </View>
             </TouchableOpacity>
@@ -158,13 +192,28 @@ export default function InterviewsScreen() {
               <View style={[styles.trackIconContainer, { backgroundColor: '#D1E9FF' }]}>
                 <MessagesSquare size={24} color="#3D5AF1" />
               </View>
-              <Text style={[styles.trackTitle, { color: colors.text }]}>Product Management</Text>
+              <Text style={[styles.trackTitle, { color: colors.text }]}>Service-Based</Text>
               <Text style={[styles.trackDescription, { color: colors.textSecondary }]}>
-                Strategy, Roadmaps, Analytics
+                TCS, Infosys, Wipro, HCL
               </Text>
               <View style={[styles.trackStats, { borderTopColor: colors.border }]}>
                 <Text style={[styles.trackStatText, { color: colors.textSecondary }]}>
-                  14 questions
+                  18 questions
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.trackCard, { backgroundColor: colors.card }]}>
+              <View style={[styles.trackIconContainer, { backgroundColor: '#FFE4D9' }]}>
+                <LightbulbIcon size={24} color="#FE7A36" />
+              </View>
+              <Text style={[styles.trackTitle, { color: colors.text }]}>Consultancy</Text>
+              <Text style={[styles.trackDescription, { color: colors.textSecondary }]}>
+                McKinsey, BCG, Deloitte, PwC
+              </Text>
+              <View style={[styles.trackStats, { borderTopColor: colors.border }]}>
+                <Text style={[styles.trackStatText, { color: colors.textSecondary }]}>
+                  22 questions
                 </Text>
               </View>
             </TouchableOpacity>
@@ -248,12 +297,14 @@ const styles = StyleSheet.create({
   },
   tracksContainer: {
     paddingHorizontal: 16,
+    paddingBottom: 16,
   },
   trackCard: {
     width: 200,
     borderRadius: 16,
     padding: 16,
     marginHorizontal: 8,
+    marginBottom: 8,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -269,24 +320,52 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   trackTitle: {
     fontFamily: 'Inter-Bold',
     fontSize: 16,
-    marginBottom: 8,
+    marginBottom: 6,
   },
   trackDescription: {
     fontFamily: 'Inter-Regular',
     fontSize: 14,
-    marginBottom: 16,
+    marginBottom: 12,
+    lineHeight: 20,
   },
   trackStats: {
-    paddingTop: 12,
+    paddingTop: 10,
     borderTopWidth: 1,
   },
   trackStatText: {
     fontFamily: 'Inter-Medium',
     fontSize: 12,
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+    paddingHorizontal: 4,
+  },
+  logoCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  companyLogo: {
+    width: 24,
+    height: 24,
   },
 });
