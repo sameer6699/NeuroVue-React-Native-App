@@ -5,6 +5,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useState, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Eye, EyeOff, Mail, Lock, User, Phone, AlertCircle } from 'lucide-react-native';
 import { Picker } from '@react-native-picker/picker';
+import { getApiUrl, ENV } from '@/config/env';
 
 const EXPERIENCE_LEVELS = [
   'Fresher',
@@ -216,8 +217,7 @@ export default function SignUp() {
             password: '[REDACTED]'
           });
 
-
-          const API_URL = 'http://192.168.31.244:5000/api/auth/signup';
+          const API_URL = getApiUrl(ENV.API_ENDPOINTS.SIGNUP);
           console.log('Attempting to connect to:', API_URL);
 
           const response = await fetch(API_URL, {

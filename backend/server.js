@@ -52,5 +52,5 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
-    console.log(`Server is accessible at http://192.168.31.244:${PORT}`);
+    console.log(`Server is accessible at http://192.168.161.249:${PORT}`);
 }); 
