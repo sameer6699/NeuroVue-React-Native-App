@@ -36,6 +36,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
+app.use('/api/resume', require('./routes/resume'));
 
 // Basic route
 app.get('/', (req, res) => {
@@ -52,5 +53,5 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
-    console.log(`Server is accessible at http://192.168.161.249:${PORT}`);
+    console.log(`Server is accessible at http://192.168.184.109:${PORT}`);
 }); 

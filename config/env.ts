@@ -1,9 +1,10 @@
 export const ENV = {
-  API_BASE_URL: 'http://192.168.161.249:5000',
+  API_BASE_URL: 'http://192.168.184.109:5000',
   API_ENDPOINTS: {
     SIGNUP: '/api/auth/signup',
     SIGNIN: '/api/auth/signin',
     UPDATE_PROFILE: '/api/users/update-profile',
+    RESUME_ANALYZE: '/api/resume/analyze',
   },
 };
 

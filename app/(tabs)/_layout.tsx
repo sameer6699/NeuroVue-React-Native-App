@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Home, History, User, Brain, Bot } from 'lucide-react-native';
+import { Home, History, User, Brain, Bot, FileText } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -44,6 +44,14 @@ export default function TabLayout() {
           title: 'Home',
           headerShown: false,
           tabBarIcon: ({ color, size }) => <Home size={28} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="ats-resume"
+        options={{
+          title: 'Resume Analyzer',
+          headerTitle: 'Resume Analyzer',
+          tabBarIcon: ({ color, size }) => <FileText size={28} color={color} />,
         }}
       />
       <Tabs.Screen
