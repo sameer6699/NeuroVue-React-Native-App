@@ -4,6 +4,7 @@ export const ENV = {
     SIGNUP: '/api/auth/signup',
     SIGNIN: '/api/auth/signin',
     UPDATE_PROFILE: '/api/users/update-profile',
+    RESUME_ANALYZE: '/api/resume/analyze',
   },
 };
 
