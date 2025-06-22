@@ -240,19 +240,7 @@ export default function SignUp() {
           console.log('Response data:', data);
 
           if (data.success) {
-            // Show success message with better formatting
-            Alert.alert(
-              '🎉 Account Created Successfully!',
-              'Your account has been created. You can now sign in to continue.',
-              [
-                {
-                  text: 'Sign In',
-                  onPress: () => router.replace('/sign-in'),
-                  style: 'default'
-                }
-              ],
-              { cancelable: false }
-            );
+            router.replace('/sign-up-success');
           } else {
             throw new Error(data.message || 'Signup failed');
           }

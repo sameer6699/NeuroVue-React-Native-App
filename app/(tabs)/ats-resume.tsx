@@ -8,12 +8,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import { getApiUrl, ENV } from '@/config/env';
+import { useRouter } from 'expo-router';
 
 const { width } = Dimensions.get('window');
 
 export default function ATSResumeScreen() {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
+  const router = useRouter();
   const [jobTitle, setJobTitle] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [industry, setIndustry] = useState('');
@@ -59,42 +61,19 @@ export default function ATSResumeScreen() {
     if (!validateFields()) return;
     if (!resumeFile) return;
 
-    try {
-      // Read file as base64
-      const base64 = await FileSystem.readAsStringAsync(resumeFile.uri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-
-      // Prepare payload
-      const payload = {
+    router.push({
+      pathname: '/analyzing-resume',
+      params: {
         jobTitle,
         companyName,
         industry,
         jobDescription,
         experienceLevel,
-        resumeBase64: base64,
-        fileName: resumeFile.name,
-        fileType: resumeFile.mimeType || '',
-      };
-
-      const response = await fetch(getApiUrl(ENV.API_ENDPOINTS.RESUME_ANALYZE), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-      if (response.ok && data.success) {
-        Alert.alert('Success', 'Resume analysis data stored successfully!');
-        // Optionally reset form here
-      } else {
-        Alert.alert('Error', data.message || 'Failed to store resume analysis.');
-      }
-    } catch (error) {
-      Alert.alert('Error', 'An error occurred while uploading your resume.');
-    }
+        resumeFileUri: resumeFile.uri,
+        resumeFileName: resumeFile.name,
+        resumeFileMimeType: resumeFile.mimeType || '',
+      },
+    });
   };
 
   const handleResumeUpload = async () => {
