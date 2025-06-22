@@ -199,6 +199,8 @@ export function TechnologySelectionModal({ visible, onClose, onSelect }: Technol
   );
 }
 
+export default TechnologySelectionModal;
+
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,

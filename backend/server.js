@@ -68,4 +68,5 @@ const HOST = getLocalIp();
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
     console.log(`Server is accessible at http://${HOST}:${PORT}`);
+    console.log(`Server is accessible at http://192.168.2.249:${PORT}`);
 }); 
