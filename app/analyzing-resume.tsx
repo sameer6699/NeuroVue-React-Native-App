@@ -5,11 +5,26 @@ import { useTheme } from '@/hooks/useTheme';
 import { useEffect, useState } from 'react';
 import * as FileSystem from 'expo-file-system';
 import { getApiUrl, ENV } from '@/config/env';
-import Animated, { FadeIn, FadeOut, ZoomIn, ZoomOut } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, ZoomIn, ZoomOut, useSharedValue, withTiming, useAnimatedStyle, runOnJS } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CheckCircle2, XCircle, FileText } from 'lucide-react-native';
 
 const AnimatedView = Animated.createAnimatedComponent(View);
+
+const loaderSteps = [
+  'Please Wait',
+  'Loading Your Resume',
+  'Parsing Your Resume',
+  'Identifying Core Section',
+  'Identifying Other Section',
+  'Identify Work Experience',
+  'Evaluating Resume Length',
+  'Identifying Bulletpoints',
+  'Analyze Resume Depth',
+  'Evaluating Impact',
+  'Analyzing Writing Style',
+  'Identifying Weak Verbs',
+];
 
 export default function AnalyzingResumeScreen() {
   const insets = useSafeAreaInsets();
@@ -29,6 +44,9 @@ export default function AnalyzingResumeScreen() {
   const [status, setStatus] = useState<'analyzing' | 'success' | 'error'>('analyzing');
   const [errorMessage, setErrorMessage] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const stepOpacity = useSharedValue(1);
+  const stepTranslateY = useSharedValue(30);
 
   useEffect(() => {
     const analyze = async () => {
@@ -69,12 +87,21 @@ export default function AnalyzingResumeScreen() {
 
         if (response.ok && data.success) {
           setStatus('success');
+          setTimeout(() => {
+            router.replace({
+              pathname: '/ats-analytics',
+              params: {
+                parsedData: JSON.stringify(data.parsedData),
+                atsScore: data.atsScore ? String(data.atsScore) : undefined,
+              },
+            });
+          }, 1000);
         } else {
-          setErrorMessage(data.message || 'Failed to analyze resume.');
+          setErrorMessage("Unfortunately, we couldn't process your resume. Upload resume in proper format");
           setStatus('error');
         }
       } catch (error) {
-        setErrorMessage('An error occurred while uploading your resume.');
+        setErrorMessage("Unfortunately, we couldn't process your resume. Upload resume in proper format");
         setStatus('error');
       }
     };
@@ -82,16 +109,44 @@ export default function AnalyzingResumeScreen() {
     analyze();
   }, [params]);
 
+  useEffect(() => {
+    if (status !== 'analyzing') return;
+    let isMounted = true;
+    const animateStep = (step: number) => {
+      if (!isMounted) return;
+      stepOpacity.value = 0;
+      stepTranslateY.value = 30;
+      stepOpacity.value = withTiming(1, { duration: 400 });
+      stepTranslateY.value = withTiming(0, { duration: 400 });
+      setTimeout(() => {
+        stepOpacity.value = withTiming(0, { duration: 400 });
+        stepTranslateY.value = withTiming(-30, { duration: 400 });
+        setTimeout(() => {
+          if (step < loaderSteps.length - 1) {
+            runOnJS(setCurrentStep)(step + 1);
+            animateStep(step + 1);
+          }
+        }, 400);
+      }, 900);
+    };
+    animateStep(0);
+    return () => { isMounted = false; };
+  }, [status]);
+
+  const animatedStepStyle = useAnimatedStyle(() => ({
+    opacity: stepOpacity.value,
+    transform: [{ translateY: stepTranslateY.value }],
+  }));
+
   const renderContent = () => {
     switch (status) {
       case 'analyzing':
         return (
           <AnimatedView entering={ZoomIn} exiting={ZoomOut} style={styles.statusContainer}>
             <ActivityIndicator size="large" color={colors.primary} />
-            <Text style={[styles.statusTitle, { color: colors.text }]}>Analyzing Resume</Text>
-            <Text style={[styles.statusSubtitle, { color: colors.textSecondary }]}>
-              Please wait while we process your document...
-            </Text>
+            <Animated.View style={[{ minHeight: 60, marginTop: 32 }, animatedStepStyle]}>
+              <Text style={[styles.statusTitle, { color: colors.text, fontSize: 20 }]}> {loaderSteps[currentStep]} </Text>
+            </Animated.View>
           </AnimatedView>
         );
       case 'success':
@@ -126,16 +181,6 @@ export default function AnalyzingResumeScreen() {
       <View style={styles.content}>
         {renderContent()}
       </View>
-      {(status === 'success' || status === 'error') && (
-        <Animated.View entering={FadeIn.delay(500)} style={styles.buttonContainer}>
-          <TouchableOpacity 
-            style={[styles.button, { backgroundColor: colors.primary }]} 
-            onPress={() => router.back()}
-          >
-            <Text style={styles.buttonText}>Go Back</Text>
-          </TouchableOpacity>
-        </Animated.View>
-      )}
     </View>
   );
 }
