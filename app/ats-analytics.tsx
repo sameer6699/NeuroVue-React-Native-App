@@ -6,6 +6,84 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft, Award, BookOpen, Briefcase, FileText, GraduationCap, Layers, Medal, User as UserIcon } from 'lucide-react-native';
 import { ProfileAvatar } from '@/components/ui/ProfileAvatar';
 import React from 'react';
+import Svg, { Path, G } from 'react-native-svg';
+import Animated, { useSharedValue, useAnimatedProps, withTiming, Easing } from 'react-native-reanimated';
+
+const AnimatedPath = Animated.createAnimatedComponent(Path);
+
+function HalfDoughnutChart({ score, size = 200, strokeWidth = 20 }: { score: number; size?: number; strokeWidth?: number }) {
+  const { colors } = useTheme();
+  const radius = (size - strokeWidth) / 2;
+  const circumference = radius * Math.PI;
+  const progress = useSharedValue(0);
+
+  React.useEffect(() => {
+    progress.value = withTiming(score / 100, {
+      duration: 1200,
+      easing: Easing.out(Easing.exp),
+    });
+  }, [score]);
+
+  const animatedProps = useAnimatedProps(() => {
+    const angle = progress.value * 180;
+    const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => {
+      const angleInRadians = (angleInDegrees - 180) * Math.PI / 180.0;
+      return {
+        x: centerX + (radius * Math.cos(angleInRadians)),
+        y: centerY + (radius * Math.sin(angleInRadians)),
+      };
+    };
+
+    const start = polarToCartesian(size / 2, size / 2, radius, 0);
+    const end = polarToCartesian(size / 2, size / 2, radius, angle);
+    const largeArcFlag = angle <= 180 ? "0" : "1";
+
+    const d = [
+      "M", start.x, start.y,
+      "A", radius, radius, 0, largeArcFlag, 1, end.x, end.y
+    ].join(" ");
+
+    return {
+      d,
+    };
+  });
+
+  const backgroundD = [
+    "M", size / 2 - radius, size / 2,
+    "A", radius, radius, 0, 0, 1, size / 2 + radius, size / 2
+  ].join(" ");
+
+  return (
+    <View style={{ width: size, height: size / 2 + 10, alignItems: 'center', overflow: 'hidden' }}>
+      <Svg width={size} height={size}>
+        <G transform={`translate(0, ${size / 4})`}>
+          <Path
+            d={backgroundD}
+            stroke={colors.primary + '33'}
+            strokeWidth={strokeWidth}
+            fill="none"
+            strokeLinecap="round"
+          />
+          <AnimatedPath
+            animatedProps={animatedProps}
+            stroke={colors.primary}
+            strokeWidth={strokeWidth}
+            fill="none"
+            strokeLinecap="round"
+          />
+        </G>
+      </Svg>
+      <View style={{ position: 'absolute', bottom: -size/4, alignItems: 'center' }}>
+        <Text style={[styles.atsScore, { color: colors.primary, fontSize: 40 }]}>
+          {score}%
+        </Text>
+        <Text style={[styles.atsLabel, { color: colors.text, fontSize: 16, marginTop: -4 }]}>
+          Your Resume Score
+        </Text>
+      </View>
+    </View>
+  );
+}
 
 function SectionCard({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   const { colors } = useTheme();
@@ -52,7 +130,7 @@ export default function ATSAnalyticsScreen() {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const parsedData = params.parsedData ? JSON.parse(params.parsedData as string) : {};
-  const atsScore = params.atsScore;
+  const atsScore = 78; // Static ATS score
 
   // Extract user info for avatar
   const fullName = parsedData.fullName || '';
@@ -83,24 +161,22 @@ export default function ATSAnalyticsScreen() {
         transparent
         onRequestClose={() => setHowItWorksVisible(false)}
       >
-        <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center'}}>
-          <View style={{backgroundColor: colors.card, borderRadius: 16, padding: 24, width: '85%', alignItems: 'center'}}>
-            <Text style={{fontSize: 18, fontWeight: 'bold', marginBottom: 12, color: colors.primary}}>How Resume Analytics Works</Text>
-            <Text style={{fontSize: 16, color: colors.text, marginBottom: 16, textAlign: 'center'}}>
+        <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end'}}>
+          <View style={{backgroundColor: colors.card, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 32, paddingTop: 24, width: '100%', alignItems: 'center'}}>
+            <View style={{width: 40, height: 4, backgroundColor: colors.text + '55', borderRadius: 2, marginBottom: 16}} />
+            <Text style={{fontSize: 22, fontWeight: 'bold', marginBottom: 12, color: colors.primary, fontFamily: 'Inter-Bold'}}>How Resume Analytics Works</Text>
+            <Text style={{fontSize: 16, color: colors.text, marginBottom: 24, textAlign: 'center', fontFamily: 'Inter-Regular', lineHeight: 22}}>
               Your score is based on various recruiter checks.{"\n"}
               We'll show you how to fix each of these checks in your report.{"\n"}
               Fixing the issues we found will increase your resume score.
             </Text>
             <TouchableOpacity
-              style={{backgroundColor: colors.primary, borderRadius: 8, paddingVertical: 10, paddingHorizontal: 18, marginTop: 8}}
+              style={{backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 14, paddingHorizontal: 24, marginTop: 8, width: '100%'}}
               onPress={() => setHowItWorksVisible(false)}
             >
-              <Text style={{color: '#fff', fontWeight: 'bold', textAlign: 'center'}}>
-                We'll show you how to fix each of these checks in your report. Fixing the issues we found will increase your resume score.
+              <Text style={{color: '#fff', fontWeight: 'bold', textAlign: 'center', fontSize: 16, fontFamily: 'Inter-Bold'}}>
+                Got It
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setHowItWorksVisible(false)} style={{marginTop: 16}}>
-              <Text style={{color: colors.primary, fontWeight: 'bold'}}>Close</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -108,9 +184,8 @@ export default function ATSAnalyticsScreen() {
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* ATS Score Card */}
-        <LinearGradient colors={[colors.primary, colors.primary + 'CC']} style={[styles.atsCard, { backgroundColor: colors.card, shadowColor: colors.primary + '55' }]}>
-          <Text style={[styles.atsLabel, { color: colors.primary }]}>ATS Score</Text>
-          <Text style={[styles.atsScore, { color: colors.primary }]}>{atsScore ?? 'N/A'}</Text>
+        <LinearGradient colors={[colors.card, colors.card]} style={[styles.atsCard, { backgroundColor: colors.card, shadowColor: colors.primary + '55' }]}>
+          <HalfDoughnutChart score={atsScore} />
         </LinearGradient>
 
         {/* Basic Info Card */}
