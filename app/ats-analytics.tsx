@@ -64,16 +64,16 @@ export default function ATSAnalyticsScreen() {
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>  
       {/* Header with Back Button */}
-      <View style={[styles.header, { paddingTop: insets.top + 8, backgroundColor: colors.background }]}>  
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <ArrowLeft size={24} color={colors.primary} />
+      <View style={[styles.header, { paddingTop: insets.top + 16, backgroundColor: colors.background }]}>  
+        <TouchableOpacity style={[styles.backButton, { backgroundColor: 'rgba(0,0,0,0.05)', marginRight: 16, borderRadius: 12 }]} onPress={() => router.back()}>
+          <ArrowLeft size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Resume Analytics</Text>
+        <Text style={[styles.headerTitle, { color: colors.text, fontFamily: 'Inter-Bold', fontSize: 24 }]}>Resume Analytics</Text>
       </View>
 
       {/* How it works Button */}
-      <TouchableOpacity style={{margin: 16, alignSelf: 'flex-end', backgroundColor: colors.primary, borderRadius: 8, paddingVertical: 8, paddingHorizontal: 16}} onPress={() => setHowItWorksVisible(true)}>
-        <Text style={{color: '#fff', fontWeight: 'bold'}}>How it works</Text>
+      <TouchableOpacity style={[styles.howItWorksButton, { backgroundColor: colors.primary }]} onPress={() => setHowItWorksVisible(true)}>
+        <Text style={styles.howItWorksButtonText}>How it works</Text>
       </TouchableOpacity>
 
       {/* How it works Modal */}
@@ -108,9 +108,9 @@ export default function ATSAnalyticsScreen() {
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* ATS Score Card */}
-        <LinearGradient colors={[colors.primary, colors.primary + 'CC']} style={styles.atsCard}>
-          <Text style={styles.atsLabel}>ATS Score</Text>
-          <Text style={styles.atsScore}>{atsScore ?? 'N/A'}</Text>
+        <LinearGradient colors={[colors.primary, colors.primary + 'CC']} style={[styles.atsCard, { backgroundColor: colors.card, shadowColor: colors.primary + '55' }]}>
+          <Text style={[styles.atsLabel, { color: colors.primary }]}>ATS Score</Text>
+          <Text style={[styles.atsScore, { color: colors.primary }]}>{atsScore ?? 'N/A'}</Text>
         </LinearGradient>
 
         {/* Basic Info Card */}
@@ -137,7 +137,7 @@ export default function ATSAnalyticsScreen() {
         {/* Education */}
         <SectionCard icon={<GraduationCap size={20} color={colors.primary} />} title="Education">
           {parsedData.education && Array.isArray(parsedData.education) && parsedData.education.map((edu: any, idx: number) => (
-            <View key={idx} style={styles.eduCard}>
+            <View key={idx} style={[styles.eduCard, { backgroundColor: colors.card }]}>
               <InfoRow label="Degree" value={edu.degree} />
               <InfoRow label="Field of Study" value={edu.fieldOfStudy} />
               <InfoRow label="University" value={edu.university} />
@@ -152,7 +152,7 @@ export default function ATSAnalyticsScreen() {
         {/* Work Experience */}
         <SectionCard icon={<Briefcase size={20} color={colors.primary} />} title="Work Experience">
           {parsedData.workExperience && Array.isArray(parsedData.workExperience) && parsedData.workExperience.map((exp: any, idx: number) => (
-            <View key={idx} style={styles.expCard}>
+            <View key={idx} style={[styles.expCard, { backgroundColor: colors.card }]}>
               <InfoRow label="Job Title" value={exp.jobTitle} />
               <InfoRow label="Company Name" value={exp.companyName} />
               <InfoRow label="Location" value={exp.location} />
@@ -177,7 +177,7 @@ export default function ATSAnalyticsScreen() {
         {/* Certifications */}
         <SectionCard icon={<Award size={20} color={colors.primary} />} title="Certifications">
           {parsedData.certifications && Array.isArray(parsedData.certifications) && parsedData.certifications.map((cert: any, idx: number) => (
-            <View key={idx} style={styles.certCard}>
+            <View key={idx} style={[styles.certCard, { backgroundColor: colors.card }]}>
               <InfoRow label="Certification Name" value={cert.name} />
               <InfoRow label="Issuing Organization" value={cert.organization} />
               <InfoRow label="Issue Date" value={cert.issueDate} />
@@ -190,7 +190,7 @@ export default function ATSAnalyticsScreen() {
         {/* Projects */}
         <SectionCard icon={<BookOpen size={20} color={colors.primary} />} title="Projects">
           {parsedData.projects && Array.isArray(parsedData.projects) && parsedData.projects.map((proj: any, idx: number) => (
-            <View key={idx} style={styles.projectCard}>
+            <View key={idx} style={[styles.projectCard, { backgroundColor: colors.card }]}>
               <InfoRow label="Project Title" value={proj.title} />
               <InfoRow label="Short Description" value={proj.description} />
               <ListSection label="Technologies Used" items={proj.technologiesUsed} />
@@ -203,7 +203,7 @@ export default function ATSAnalyticsScreen() {
         {/* Awards & Achievements */}
         <SectionCard icon={<Medal size={20} color={colors.primary} />} title="Awards & Achievements">
           {parsedData.awards && Array.isArray(parsedData.awards) && parsedData.awards.map((award: any, idx: number) => (
-            <View key={idx} style={styles.awardCard}>
+            <View key={idx} style={[styles.awardCard, { backgroundColor: colors.card }]}>
               <InfoRow label="Award Title" value={award.title} />
               <InfoRow label="Issuing Organization" value={award.organization} />
               <InfoRow label="Date" value={award.date} />
@@ -215,7 +215,7 @@ export default function ATSAnalyticsScreen() {
         {/* Publications / Research */}
         <SectionCard icon={<FileText size={20} color={colors.primary} />} title="Publications / Research">
           {parsedData.publications && Array.isArray(parsedData.publications) && parsedData.publications.map((pub: any, idx: number) => (
-            <View key={idx} style={styles.pubCard}>
+            <View key={idx} style={[styles.pubCard, { backgroundColor: colors.card }]}>
               <InfoRow label="Title" value={pub.title} />
               <InfoRow label="Conference/Journal" value={pub.journal} />
               <InfoRow label="Year" value={pub.year} />
@@ -227,7 +227,7 @@ export default function ATSAnalyticsScreen() {
         {/* Volunteer Experience / Extracurriculars */}
         <SectionCard icon={<Briefcase size={20} color={colors.primary} />} title="Volunteer / Extracurriculars">
           {parsedData.volunteer && Array.isArray(parsedData.volunteer) && parsedData.volunteer.map((vol: any, idx: number) => (
-            <View key={idx} style={styles.volCard}>
+            <View key={idx} style={[styles.volCard, { backgroundColor: colors.card }]}>
               <InfoRow label="Role" value={vol.role} />
               <InfoRow label="Organization" value={vol.organization} />
               <InfoRow label="Duration" value={vol.duration} />
@@ -248,19 +248,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingBottom: 8,
+    paddingBottom: 16,
     zIndex: 10,
   },
   backButton: {
     padding: 8,
-    marginRight: 8,
-    borderRadius: 8,
   },
   headerTitle: {
     fontFamily: 'Inter-Bold',
-    fontSize: 22,
+    fontSize: 24,
     flex: 1,
     textAlign: 'left',
+  },
+  howItWorksButton: {
+    margin: 16,
+    alignSelf: 'flex-end',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    elevation: 2,
+  },
+  howItWorksButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontFamily: 'Inter-Medium',
+    fontSize: 16,
   },
   scrollContent: {
     paddingBottom: 32,
@@ -274,10 +286,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 2,
-    shadowColor: '#357ABD',
   },
   atsLabel: {
-    color: '#fff',
     fontSize: 16,
     fontFamily: 'Inter-Medium',
     marginBottom: 4,
@@ -285,7 +295,6 @@ const styles = StyleSheet.create({
   atsScore: {
     fontSize: 40,
     fontWeight: 'bold',
-    color: '#fff',
     fontFamily: 'Inter-Bold',
   },
   sectionCard: {
@@ -294,7 +303,6 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     padding: 18,
     elevation: 1,
-    shadowColor: '#357ABD22',
   },
   sectionHeaderRow: {
     flexDirection: 'row',
@@ -318,19 +326,16 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontWeight: '600',
-    color: '#222',
     width: 120,
     fontFamily: 'Inter-Medium',
   },
   infoValue: {
-    color: '#333',
     flex: 1,
     flexWrap: 'wrap',
     fontFamily: 'Inter-Regular',
   },
   listLabel: {
     fontWeight: '600',
-    color: '#357ABD',
     marginTop: 4,
     marginBottom: 2,
     fontFamily: 'Inter-Medium',
@@ -342,55 +347,46 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   listBadge: {
-    backgroundColor: '#E0E7FF',
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 4,
     marginBottom: 4,
   },
   listBadgeText: {
-    color: '#3730A3',
     fontFamily: 'Inter-Medium',
     fontSize: 13,
   },
   eduCard: {
-    backgroundColor: '#F0F6FF',
     borderRadius: 8,
     padding: 8,
     marginBottom: 8,
   },
   expCard: {
-    backgroundColor: '#F9F5FF',
     borderRadius: 8,
     padding: 8,
     marginBottom: 8,
   },
   certCard: {
-    backgroundColor: '#FFF7ED',
     borderRadius: 8,
     padding: 8,
     marginBottom: 8,
   },
   projectCard: {
-    backgroundColor: '#E6FFFA',
     borderRadius: 8,
     padding: 8,
     marginBottom: 8,
   },
   awardCard: {
-    backgroundColor: '#FEF9C3',
     borderRadius: 8,
     padding: 8,
     marginBottom: 8,
   },
   pubCard: {
-    backgroundColor: '#F3E8FF',
     borderRadius: 8,
     padding: 8,
     marginBottom: 8,
   },
   volCard: {
-    backgroundColor: '#DCFCE7',
     borderRadius: 8,
     padding: 8,
     marginBottom: 8,
