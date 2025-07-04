@@ -5,7 +5,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft, Award, BookOpen, Briefcase, FileText, GraduationCap, Layers, Medal, User as UserIcon } from 'lucide-react-native';
 import { ProfileAvatar } from '@/components/ui/ProfileAvatar';
-import React from 'react';
+import * as React from 'react';
 import Svg, { Path, G } from 'react-native-svg';
 import Animated, { useSharedValue, useAnimatedProps, withTiming, Easing } from 'react-native-reanimated';
 
