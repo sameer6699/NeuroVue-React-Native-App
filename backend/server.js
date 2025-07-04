@@ -66,6 +66,6 @@ const PORT = process.env.PORT || 5000;
 const HOST = getLocalIp();
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running and listening on 0.0.0.0:${PORT}`);
     console.log(`Server is accessible at http://${HOST}:${PORT}`);
 }); 

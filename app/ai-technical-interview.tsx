@@ -80,7 +80,7 @@ export default function AITechnicalInterviewScreen() {
       </View>
 
       {/* Interviewer Message */}
-      <BlurView intensity={20} style={styles.interviewerMessageContainer}>
+      <BlurView intensity={20} tint="default" style={[styles.interviewerMessageContainer, {overflow: 'hidden'}]} /* experimentalBlurMethod="dimezisBlurView" for Android if needed */>
         <LinearGradient
           colors={['rgba(145, 94, 255, 0.15)', 'rgba(145, 94, 255, 0.05)']}
           style={styles.messageGradient}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -6,7 +6,6 @@ import { ArrowLeft, Mic, MicOff, Video, VideoOff, MessageCircle, Camera } from '
 import Animated, { useAnimatedStyle, withRepeat, withTiming } from 'react-native-reanimated';
 import { useTheme } from '@/hooks/useTheme';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
 
 const { width, height } = Dimensions.get('window');
 
@@ -80,7 +79,7 @@ export default function BehavioralInterviewSessionScreen() {
       </View>
 
       {/* Interviewer Message */}
-      <BlurView intensity={20} style={styles.interviewerMessageContainer}>
+      <View style={[styles.interviewerMessageContainer, { backgroundColor: 'rgba(255,255,255,0.15)' }]}>
         <LinearGradient
           colors={['rgba(145, 94, 255, 0.15)', 'rgba(145, 94, 255, 0.05)']}
           style={styles.messageGradient}
@@ -92,7 +91,7 @@ export default function BehavioralInterviewSessionScreen() {
             </Text>
           </View>
         </LinearGradient>
-      </BlurView>
+      </View>
 
       {/* Controls */}
       <View style={styles.controlsContainer}>
